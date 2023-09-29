@@ -24,7 +24,11 @@ def TCPClient(file):
 
 #Split into packages here
     #None functioning, need to send bytes, not lists
-    #packets = Make_Packets(file)
+    packets = Make_Packets(file)
+
+
+
+
 
 #Transmit
 
@@ -35,10 +39,19 @@ def TCPClient(file):
     #create UDP Socket
     clientSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    #for i in range (0, len(packets)):
-        #print('Sending: ' + str(packets[i]))
+
+    #im just going to transmit dummy packets for now so that way i have something
+    #to work with on the server side.
+    for i in range (0, len(packets)):
+        print('Sending: ' + str(packets[i]))
+
+        #convert list to byte array
+        values = bytearray(packets[i])
+
         #Non functioning, need to send bytes, not lists
-        #clientSocket.sendto(packets[i], (serverName, serverPort))
+
+
+        clientSocket.sendto(values, (serverName, serverPort))
 
     #Send message to server at port defined earlier
     #clientSocket.sendto(input.encode(), (serverName, serverPort))
@@ -50,6 +63,11 @@ def TCPClient(file):
 
     #close socket
     clientSocket.close()
+
+
+def Make_Packets(file):
+    packets = [[1, 0, 0, 1], [1, 1, 1, 0], [0, 1]]
+    return packets
 
 #Main, used to start TCPClient and send name of passed file
 if __name__ == "__main__":
@@ -68,8 +86,3 @@ if __name__ == "__main__":
         TCPClient(file_path)
 
 
-def Make_Packets(file):
-    
-
-    packets = [[1, 0, 0, 1], [1, 1, 1, 0], [0, 1]]
-    return packets
