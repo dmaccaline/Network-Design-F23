@@ -9,6 +9,10 @@ import socket
 #import system for command line arguments
 import sys
 
+#import file dialog stuff
+import tkinter as tk
+from tkinter import filedialog
+
 #Client Functionality (called from main)
 def TCPClient(file):
     #from socket import *
@@ -20,7 +24,7 @@ def TCPClient(file):
 
 #Split into packages here
     #None functioning, need to send bytes, not lists
-    packets = Make_Packets(file)
+    #packets = Make_Packets(file)
 
 #Transmit
 
@@ -31,10 +35,10 @@ def TCPClient(file):
     #create UDP Socket
     clientSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    for i in range (0, len(packets)):
-        print('Sending: ' + str(packets[i]))
+    #for i in range (0, len(packets)):
+        #print('Sending: ' + str(packets[i]))
         #Non functioning, need to send bytes, not lists
-        clientSocket.sendto(packets[i], (serverName, serverPort))
+        #clientSocket.sendto(packets[i], (serverName, serverPort))
 
     #Send message to server at port defined earlier
     #clientSocket.sendto(input.encode(), (serverName, serverPort))
@@ -50,13 +54,18 @@ def TCPClient(file):
 #Main, used to start TCPClient and send name of passed file
 if __name__ == "__main__":
 
+    root = tk.Tk()
+    root.withdraw()
+
+    file_path = filedialog.askopenfilename()
+
     #check if input argument provided
-    if len(sys.argv) <= 1:
+    if len(file_path) <= 1:
         #output error if no input file provided
         print("Error: No input file specified")
     else:
         #pass input file name to client
-        TCPClient(str(sys.argv[1]))
+        TCPClient(file_path)
 
 
 def Make_Packets(file):
