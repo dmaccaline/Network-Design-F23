@@ -2,6 +2,7 @@ Daniel Maccaline
 
 Created initial files, and contriuted server/client from part 1 as base for coding
 Command line file select
+Added code to open file, split file into packets, and have client send/server recieve packets
 
 Nathan
 test
