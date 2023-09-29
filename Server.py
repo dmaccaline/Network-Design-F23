@@ -38,3 +38,12 @@ def TCPServer():
 #Main method used to start server
 if __name__ == "__main__":
     TCPServer()
+
+
+
+
+def Assemble_Packets(file, packet):
+   
+   file = file + packet
+   
+   return file

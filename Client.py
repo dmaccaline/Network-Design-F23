@@ -10,17 +10,17 @@ import socket
 import sys
 
 #Client Functionality (called from main)
-def TCPClient(input):
+def TCPClient(file):
     #from socket import *
 
     #output message to indicate client startup/message contents
-    print('Starting Client to send image: ', input)
+    print('Starting Client to send image: ', file)
 
 #read file in here
 
 #Split into packages here
     #None functioning, need to send bytes, not lists
-    packets = [[1, 0, 0, 1], [1, 1, 1, 0], [0, 1]]
+    packets = Make_Packets(file)
 
 #Transmit
 
@@ -57,3 +57,10 @@ if __name__ == "__main__":
     else:
         #pass input file name to client
         TCPClient(str(sys.argv[1]))
+
+
+def Make_Packets(file):
+    
+
+    packets = [[1, 0, 0, 1], [1, 1, 1, 0], [0, 1]]
+    return packets
