@@ -4,6 +4,8 @@ Client:
 
 EDIT:
   According to the TA in slack earlier, there should be "ack/nack" or acknoledge and not acknoledge.  (assuming I am interpreting this correctly) We DO NOT need to keep track of packet #, as we simply send the packets in order, and wait for acknoledge before the next package is sent.  Below text is still relevent in reference to indicating to the server when the final packet has arrived.  
+Edit2:
+  After reading the section in the book directed to in the instructions (3.4.1) it specifically mentions that no acknoleddgement is used, as it is assumed in the section that there is a perfectly reliable underlying data transfer.  This assumption is also made in the assignment, as such acknoledgement may not be needed.  May need to ask for clarification from the TA since he mentioned ack/nack as an example of something we need, though he may be referring to future phases.  
 
 Make_Packet 0 splits into 1024B sizes, + Header (number containing order of packets (might not be needed))
   Packet # should be in binary,not sure how many bits to use, maybe 16? (give max numb packets as ~65.5k, max file size of 67,108,864 bits assuming packets of 1024 bits (57 mBit))
