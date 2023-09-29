@@ -2,6 +2,9 @@ Phase 1 Req, send bmp file
 
 Client:
 
+EDIT:
+  According to the TA in slack earlier, there should be "ack/nack" or acknoledge and not acknoledge.  (assuming I am interpreting this correctly) We DO NOT need to keep track of packet #, as we simply send the packets in order, and wait for acknoledge before the next package is sent.  Below text is still relevent in reference to indicating to the server when the final packet has arrived.  
+
 Make_Packet 0 splits into 1024B sizes, + Header (number containing order of packets (might not be needed))
   Packet # should be in binary,not sure how many bits to use, maybe 16? (give max numb packets as ~65.5k, max file size of 67,108,864 bits assuming packets of 1024 bits (57 mBit))
   Theoretically can increase packet size if file is larger than max size (this would be fairly trivial to add later)
