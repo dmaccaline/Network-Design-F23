@@ -82,11 +82,6 @@ def TCPClient(fileName):
     #close socket
     clientSocket.close()
 
-
-def Make_Packets(file):
-    packets = [[1, 0, 0, 1], [1, 1, 1, 0], [0, 1]]
-    return packets
-
 #Main, used to start TCPClient and send name of passed file
 if __name__ == "__main__":
 
