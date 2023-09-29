@@ -24,15 +24,16 @@ def TCPServer():
 
         #Recieve message, store message in sentence, store address of client that sent message to clientAddress
         sentence, clientAddress = serverSocket.recvfrom(2048)
+        print(sentence)
 
         #Print message recieved from client
-        
         #modify message, used to test if message is being properly sent/recieved both ways
 
         print("Server recieved " + str(len(sentence)) + " bytes containing: " + str(sentence))
 
         #Send message to client
         #serverSocket.sendto("Recieved".encode(), clientAddress)
+
 
 
 #Main method used to start server
