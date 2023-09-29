@@ -3,8 +3,12 @@ Phase 1 Req, send bmp file
 Client:
 
 Make_Packet 0 splits into 1024B sizes, + Header (number containing order of packets (might not be needed))
+  Packet # should be in binary,not sure how many bits to use, maybe 16? (give max numb packets as ~65.5k, max file size of 67,108,864 bits assuming packets of 1024 bits (57 mBit))
+  Theoretically can increase packet size if file is larger than max size (this would be fairly trivial to add later)
     Header also needs way to inicate when final packet is sent/recieved to tell server to stop concatenating
-Send UDP Packet one at a time
+      The indication for when at file end may not be needed, as the BMP file has a header with file size, which could be re-used for this purpose
+        See https://en.wikipedia.org/wiki/BMP_file_format for details
+Send UDP Packet one at a time in loop
 
 
 Server:
@@ -23,3 +27,5 @@ Functions
   Make_Packet - Splits file into smaller parts of fixed size, and creates header for the packets
 
   Assemble_Packets - re-assembles packets into a file
+    Must read header too determine packet order, then remove header and concatenate file together
+    
