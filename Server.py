@@ -26,13 +26,13 @@ def TCPServer():
         sentence, clientAddress = serverSocket.recvfrom(2048)
 
         #Print message recieved from client
-        print("from connected user: " + str(sentence.decode()))
-        print('Client socket number: ' + str(clientAddress[1]))
+        
         #modify message, used to test if message is being properly sent/recieved both ways
-        modifiedSentence = sentence.decode() + '!'
+
+        print("Server recieved " + str(len(sentence)) + " bytes containing: " + str(sentence))
 
         #Send message to client
-        serverSocket.sendto(modifiedSentence.encode(), clientAddress)
+        #serverSocket.sendto("Recieved".encode(), clientAddress)
 
 
 #Main method used to start server

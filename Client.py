@@ -9,18 +9,49 @@ import socket
 #import system for command line arguments
 import sys
 
+def Make_Packets(file, packetFile):
+
+    data = file.read()
+
+    currentIndex = 1024
+
+    packet = [data[0:1024]]
+
+    while(currentIndex < len(data)):
+        packet.append(data[currentIndex:currentIndex + 1024])
+        currentIndex += 1024
+    
+    return packet
+
 #Client Functionality (called from main)
-def TCPClient(file):
+def TCPClient(fileName):
     #from socket import *
 
+    #packet size in bytes
+    packetSize = 1024
+
     #output message to indicate client startup/message contents
-    print('Starting Client to send image: ', file)
+    print('Starting Client to send image: ', fileName)
 
 #read file in here
+    try:
+        file = open(fileName,"rb")
+    except:
+        print("File coould not be opened...")
+        return
+    
+    
+    if file.closed:
+        print("File could not be opened")
+
+    packet = Make_Packets(file, packetSize)
+
+    file.close()
+
 
 #Split into packages here
     #None functioning, need to send bytes, not lists
-    packets = Make_Packets(file)
+   # packets = Make_Packets(file)
 
 #Transmit
 
@@ -31,10 +62,12 @@ def TCPClient(file):
     #create UDP Socket
     clientSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    for i in range (0, len(packets)):
-        print('Sending: ' + str(packets[i]))
+    print("Number of packets to send: " + str(len(packet)))
+
+    for i in range (0, len(packet)):
+        print('Sending packet ' + str(i) + " of size " + str(len(packet[i])) + " Bytes ")
         #Non functioning, need to send bytes, not lists
-        clientSocket.sendto(packets[i], (serverName, serverPort))
+        clientSocket.sendto(packet[i], (serverName, serverPort))
 
     #Send message to server at port defined earlier
     #clientSocket.sendto(input.encode(), (serverName, serverPort))
@@ -59,8 +92,3 @@ if __name__ == "__main__":
         TCPClient(str(sys.argv[1]))
 
 
-def Make_Packets(file):
-    
-
-    packets = [[1, 0, 0, 1], [1, 1, 1, 0], [0, 1]]
-    return packets
