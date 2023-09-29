@@ -1,20 +1,28 @@
 """
 TCP Client
-Created 9/13/2023
-Author: Daniel Maccaline
-Based on code from presentation slides:
-    Vokkarane, V, Python Socket Programming 101 - Python.pptx. University of Massachusetts Lowell, EECE.5830
+Authors: Daniel Maccaline and Nathan
+  Based on code from phase 1 (Daniel Maccaline)
 """
 
 #import socket library
 import socket
+#import system for command line arguments
+import sys
 
 #Client Functionality (called from main)
 def TCPClient(input):
     #from socket import *
 
     #output message to indicate client startup/message contents
-    print('Starting Client with message: ', input)
+    print('Starting Client to send image: ', input)
+
+#read file in here
+
+#Split into packages here
+    #None functioning, need to send bytes, not lists
+    packets = [[1, 0, 0, 1], [1, 1, 1, 0], [0, 1]]
+
+#Transmit
 
     #set server name and port to expect server at
     serverName = 'localhost'
@@ -23,18 +31,29 @@ def TCPClient(input):
     #create UDP Socket
     clientSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    #Send message to server at port defined earlier
-    clientSocket.sendto(input.encode(), (serverName, serverPort))
-    #recieve message being sent back to client
-    modifiedSentence, server = clientSocket.recvfrom(2048)
+    for i in range (0, len(packets)):
+        print('Sending: ' + str(packets[i]))
+        #Non functioning, need to send bytes, not lists
+        clientSocket.sendto(packets[i], (serverName, serverPort))
 
-    #print returned message
-    print('from Server: ', modifiedSentence.decode())
-    print('Server socket number: ' + str(server[1]))
+    #Send message to server at port defined earlier
+    #clientSocket.sendto(input.encode(), (serverName, serverPort))
+
+
+#not using recvfrom (no server response expected)
+#recieve message being sent back to client
+#    modifiedSentence, server = clientSocket.recvfrom(2048)
 
     #close socket
     clientSocket.close()
 
-#Main, used to start TCPClient
+#Main, used to start TCPClient and send name of passed file
 if __name__ == "__main__":
-    TCPClient('Hello')
+
+    #check if input argument provided
+    if len(sys.argv) <= 1:
+        #output error if no input file provided
+        print("Error: No input file specified")
+    else:
+        #pass input file name to client
+        TCPClient(str(sys.argv[1]))

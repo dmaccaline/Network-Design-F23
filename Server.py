@@ -1,9 +1,7 @@
 """
 TCP Server
-Created 9/13/2023
-Author: Daniel Maccaline
-Based on code from presentation slides:
-    Vokkarane, V, Python Socket Programming 101 - Python.pptx. University of Massachusetts Lowell, EECE.5830
+Authors: Daniel Maccaline and Nathan
+  Based on code from phase 1 (Daniel Maccaline)
 """
 
 import socket
