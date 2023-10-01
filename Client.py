@@ -1,6 +1,6 @@
 """
 TCP Client
-Authors: Daniel Maccaline and Nathan
+Authors: Daniel Maccaline and Nathan Grady
   Based on code from phase 1 (Daniel Maccaline)
 """
 import time

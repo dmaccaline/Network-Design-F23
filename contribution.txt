@@ -5,4 +5,6 @@ Command line file select
 Added code to open file, split file into packets, and have client send/server recieve packets
 
 Nathan
-test
+added code to select a file from a file dialog box
+added code to reassemble packets
+added code to view the image
