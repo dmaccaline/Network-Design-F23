@@ -36,7 +36,8 @@ def TCPServer():
             image = Image.open(image_stream)
             image.show()
             frame=b''
-        frame+=sentence
+        else:
+            frame+=sentence
 
 
 
