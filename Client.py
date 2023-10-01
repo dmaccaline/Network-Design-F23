@@ -3,7 +3,7 @@ TCP Client
 Authors: Daniel Maccaline and Nathan
   Based on code from phase 1 (Daniel Maccaline)
 """
-
+import time
 #import socket library
 import socket
 #import system for command line arguments
@@ -17,7 +17,6 @@ from tkinter import filedialog
 def Make_Packets(file, packetFile):
 
     data = file.read()
-
     currentIndex = 1024
 
     packet = [data[0:1024]]
@@ -67,12 +66,20 @@ def TCPClient(fileName):
     #create UDP Socket
     clientSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    print("Number of packets to send: " + str(len(packet)))
+    #print("Number of packets to send: " + str(len(packet)))
 
-    for i in range (0, len(packet)):
-        print('Sending packet ' + str(i) + " of size " + str(len(packet[i])) + " Bytes ")
+    for i in range (0,len(packet)):
+        #print('Sending packet ' + str(i) + " of size " + str(len(packet[i])) + " Bytes ")
         #Non functioning, need to send bytes, not lists
+
+
+        print(packet[i])
+        print()
+
         clientSocket.sendto(packet[i], (serverName, serverPort))
+
+    time.sleep(0.1)
+    clientSocket.sendto(b'stop', (serverName, serverPort))
 
 
 #not using recvfrom (no server response expected)

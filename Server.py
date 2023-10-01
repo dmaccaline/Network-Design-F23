@@ -5,10 +5,14 @@ Authors: Daniel Maccaline and Nathan
 """
 
 import socket
+from PIL import Image
+import io
+
+
+
 
 def TCPServer():
-    #from socket import *
-
+    frame=b""
     #Define server port number
     serverPort = 11000
 
@@ -18,18 +22,30 @@ def TCPServer():
     serverSocket.bind(('', serverPort))
     #output message indicating ready to recieve
     print('The server is ready to recieve')
-
     #Loop forever, continually read messages sent to socket
     while True:
-
         #Recieve message, store message in sentence, store address of client that sent message to clientAddress
         sentence, clientAddress = serverSocket.recvfrom(2048)
-        print(sentence)
+        #print(sentence)
+
+        #add all the sentences together
+        if(sentence==b'stop'):
+            #print(frame)
+            image_stream = io.BytesIO(frame)
+            #Open the image using Pillow
+            image = Image.open(image_stream)
+            image.show()
+            frame=b''
+        frame+=sentence
+
+
+
 
         #Print message recieved from client
         #modify message, used to test if message is being properly sent/recieved both ways
 
-        print("Server recieved " + str(len(sentence)) + " bytes containing: " + str(sentence))
+        print()
+        print((sentence))
 
         #Send message to client
         #serverSocket.sendto("Recieved".encode(), clientAddress)
