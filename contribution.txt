@@ -3,6 +3,8 @@ Daniel Maccaline
 Created initial files, and contriuted server/client from part 1 as base for coding
 Command line file select
 Added code to open file, split file into packets, and have client send/server recieve packets
+Changed how file is created/displayed so it does not rely on Pillow
+Fixed issue of client sending packets faster than server could recieve
 
 Nathan
 added code to select a file from a file dialog box
