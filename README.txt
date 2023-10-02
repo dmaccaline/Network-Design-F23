@@ -1,36 +1,53 @@
-Phase 1 Req, send bmp file
+Daniel Maccaline, Nathan Grady
+Phase 2
 
-Client:
-
-EDIT:
-  According to the TA in slack earlier, there should be "ack/nack" or acknoledge and not acknoledge.  (assuming I am interpreting this correctly) We DO NOT need to keep track of packet #, as we simply send the packets in order, and wait for acknoledge before the next package is sent.  Below text is still relevent in reference to indicating to the server when the final packet has arrived.  
-Edit2:
-  After reading the section in the book directed to in the instructions (3.4.1) it specifically mentions that no acknoleddgement is used, as it is assumed in the section that there is a perfectly reliable underlying data transfer.  This assumption is also made in the assignment, as such acknoledgement may not be needed.  May need to ask for clarification from the TA since he mentioned ack/nack as an example of something we need, though he may be referring to future phases.  
-
-Make_Packet 0 splits into 1024B sizes, + Header (number containing order of packets (might not be needed))
-  Packet # should be in binary,not sure how many bits to use, maybe 16? (give max numb packets as ~65.5k, max file size of 67,108,864 bits assuming packets of 1024 bits (57 mBit))
-  Theoretically can increase packet size if file is larger than max size (this would be fairly trivial to add later)
-    Header also needs way to inicate when final packet is sent/recieved to tell server to stop concatenating
-      The indication for when at file end may not be needed, as the BMP file has a header with file size, which could be re-used for this purpose
-        See https://en.wikipedia.org/wiki/BMP_file_format for details
-Send UDP Packet one at a time in loop
+Made in Windows using Python 3.11.5
 
 
-Server:
 
-Recieve packet
-    Re-assemble in order
-	May need to hold on to packet seperaty if arrived out of order, depends on how bmp files are layed out
+Files submitted
+	- README.txt (this file)
+	- DesignDoc.md
+		- Word file containing details about the program and its execution
+	- server.py
+		- File containing code for the UDP server, acts as reciever
+	- client.py
+		- File containing code for the DP client, acts as sender
+	- contribution.txt
+	    - File containing contributions by each member
 
-Functions
- Client main - recieves file as either command line input or hard-coded input (command line preferred)
-  Calls Make_Packet, then loops for each packet and sends each to server
- Sever main - Co ntinually recieve packets and assemble.  
-  Either assemble as it goes, or store and assemble all at once
-    Later would make it easier to handle packages out of order
 
-  Make_Packet - Splits file into smaller parts of fixed size, and creates header for the packets
+File setup:
+	- extract zip files with the client.py and server.py to a location on the pc
 
-  Assemble_Packets - re-assembles packets into a file
-    Must read header too determine packet order, then remove header and concatenate file together
-    
+How to run:
+	- Open the file location containing client.py and server.py using the command prompt (terminal)
+	- Run the server file first, using the command:
+		python server.py
+	- Once the server is running, start the client in a seperate terminal window with the following command:
+		python client.py
+	- NOTE: the server will indicate when it is ready to recieve messages by printing the message "The server is ready to recieve" in the terminal window
+		- The client should not be started before this message is printed
+		- Note2: once the server is started, the client can be run multiple times without re-starting the server.
+
+Expected output:
+
+Note: <message> is the string passed to the client by the main method in client.py
+
+	- From Server:
+		Expect the following on startup:
+			- "The server is ready to recieve"
+		When client is run, the following is expected:
+			- "from connected user: <message>"
+			- "Client socket number: <Socket>
+			Note the above output occurs each time client is run
+
+	- From Client:
+		- "Starting Client with message:  <message>"
+		- "from Server:  <message>"
+		- "Server socket number: <Socket>
+
+
+References:
+both the client and server use code provided in a class handout, citation provided below and in the corresponding source files headers
+

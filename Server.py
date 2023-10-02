@@ -36,7 +36,6 @@ def TCPServer():
             f.write(frame)
             f.close()
             os.startfile("temp.bmp")
-
             frame = b""
 
         else:

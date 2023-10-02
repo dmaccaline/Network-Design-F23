@@ -6,8 +6,6 @@ Authors: Daniel Maccaline and Nathan Grady
 import time
 #import socket library
 import socket
-#import system for command line arguments
-import sys
 
 #import file dialog stuff
 import tkinter as tk
