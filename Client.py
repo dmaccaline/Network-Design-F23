@@ -67,8 +67,9 @@ def TCPClient(fileName):
     for i in range (0,len(packet)):
         #Send packet
         clientSocket.sendto(packet[i], (serverName, serverPort))
+        time.sleep(.01)
         #Wait for server acknoledgement (will cause severe packet loss if client sends faster than server can recieve)
-        modifiedSentence, server = clientSocket.recvfrom(2048)
+#        modifiedSentence, server = clientSocket.recvfrom(2048)
 
     #Send code indicating end of file
     time.sleep(0.1)
