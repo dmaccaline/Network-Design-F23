@@ -5,15 +5,15 @@ Authors: Daniel Maccaline and Nathan Grady
 """
 
 import socket
-from PIL import Image
-import io
 import os
 
 
 
 def TCPServer():
+
+    #string of bytes to hold passed file
     frame=b""
-    i=0
+
     #Define server port number
     serverPort = 11000
 
@@ -23,47 +23,30 @@ def TCPServer():
     serverSocket.bind(('', serverPort))
     #output message indicating ready to recieve
     print('The server is ready to recieve')
+
     #Loop forever, continually read messages sent to socket
-    f = open("demofileOut.bmp", "wb")
     while True:
         #Recieve message, store message in sentence, store address of client that sent message to clientAddress
         sentence, clientAddress = serverSocket.recvfrom(2048)
-        #print(sentence)
 
-        #add all the sentences together
+        #if passed sentence = stop code
         if(sentence==b'stop'):
-            #print(frame)
+            #store created output to bmp file and open the file
+            f = open("temp.bmp", "wb")
+            f.write(frame)
             f.close()
-            os.startfile("demofileOut.bmp")
+            os.startfile("temp.bmp")
 
-            print("Number of packages recieved: " + str(i))
-            return
+            frame = b""
+
         else:
-            i = i + 1
+            #if not at end of file, concatenate sentence to frame
             frame+=sentence
-            f.write(sentence)
 
-
-        #Print message recieved from client
-        #modify message, used to test if message is being properly sent/recieved both ways
-
-        #print()
-        #print((sentence))
-
-        #Send message to client
+        #Send message to client, used to prevent client from sending messages faster than server can handle them
         serverSocket.sendto("Recieved".encode(), clientAddress)
-
 
 
 #Main method used to start server
 if __name__ == "__main__":
     TCPServer()
-
-
-
-
-def Assemble_Packets(file, packet):
-   
-   file = file + packet
-   
-   return file
