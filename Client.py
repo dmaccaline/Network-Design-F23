@@ -67,24 +67,32 @@ def TCPClient(fileName):
     clientSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
     #print("Number of packets to send: " + str(len(packet)))
+    f = open("ClientFile.bmp", "wb")
+
+    l=0
 
     for i in range (0,len(packet)):
         #print('Sending packet ' + str(i) + " of size " + str(len(packet[i])) + " Bytes ")
         #Non functioning, need to send bytes, not lists
 
 
-        print(packet[i])
-        print()
+        #print(packet[i])
+        #print()
 
+        f.write(packet[i])
+        l = l + 1
         clientSocket.sendto(packet[i], (serverName, serverPort))
+        modifiedSentence, server = clientSocket.recvfrom(2048)
 
     time.sleep(0.1)
     clientSocket.sendto(b'stop', (serverName, serverPort))
 
+    print("Number Packets: " + str(l))
+
 
 #not using recvfrom (no server response expected)
 #recieve message being sent back to client
-#    modifiedSentence, server = clientSocket.recvfrom(2048)
+#
 
     #close socket
     clientSocket.close()
