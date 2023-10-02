@@ -45,7 +45,7 @@ def TCPServer():
             #if not at end of file, concatenate sentence to frame
             frame+=sentence
             # Send message to client, used to prevent client from sending messages faster than server can handle them
-            serverSocket.sendto("Recieved".encode(), clientAddress)
+            #serverSocket.sendto("Recieved".encode(), clientAddress)
 
 
 #Main method used to start server
