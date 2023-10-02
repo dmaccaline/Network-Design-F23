@@ -22,11 +22,13 @@ Report preparation:
 Created README.txt, DesignDoc.docx
 
 
-Nathan
+Nathan Grady
 
-Time commitment:
+Time commitment: Not accuratly tracked, estimated ~5H
 
 Design contribution:
+sever side rebuilding of packets
+client side indication of the last packet of a file
 
 Coding contribution:
 added code to select a file from a file dialog box
@@ -34,4 +36,7 @@ added code to reassemble packets
 added code to view the image
 
 Debugging contribution:
+N/A
 
+Report preparation:
+contributed to DesignDoc.docx
