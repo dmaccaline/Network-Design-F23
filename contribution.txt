@@ -1,6 +1,6 @@
 Daniel Maccaline
 
-Time commitment: Not accuratly tracked, estimated ~10H
+Time commitment: Not accuratly tracked, estimated ~8H
 
 Design contribution:
 Current file creation/viewing system
