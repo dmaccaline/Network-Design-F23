@@ -36,14 +36,16 @@ def TCPServer():
             f.write(frame)
             f.close()
             os.startfile("temp.bmp")
+
             frame = b""
+            #Output completion statement
+            print("Finished recieving file\nFile opened in seperate window")
 
         else:
             #if not at end of file, concatenate sentence to frame
             frame+=sentence
-
-        #Send message to client, used to prevent client from sending messages faster than server can handle them
-        serverSocket.sendto("Recieved".encode(), clientAddress)
+            # Send message to client, used to prevent client from sending messages faster than server can handle them
+            serverSocket.sendto("Recieved".encode(), clientAddress)
 
 
 #Main method used to start server
