@@ -1,4 +1,4 @@
-Daniel Maccaline, Nathan Grady
+ Daniel Maccaline, Nathan Grady
 Phase 2
 
 Made in Windows using Python 3.11.5
