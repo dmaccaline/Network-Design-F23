@@ -6,33 +6,47 @@ Authors: Daniel Maccaline and Nathan Grady
 import time
 #import socket library
 import socket
+#import system for command line arguments
+import sys
+from functions import *
 
 #import file dialog stuff
 import tkinter as tk
 from tkinter import filedialog
 
 
-def Make_Packets(file, packetSize):
+def Make_Packets(file, packetFile):
 
-    #Read file data
+    #read in file
     data = file.read()
+    currentIndex = 0
 
-    #Setup variable to track progress
-    currentIndex = packetSize
+    #create packet list
 
-    #Get first packet
-    packet = [data[0:packetSize]]
+    packet = []
 
-    #loop and create all other packets
     while(currentIndex < len(data)):
-        packet.append(data[currentIndex:currentIndex + packetSize])
-        currentIndex += packetSize
 
-    #Return results
+        #extract just the data from the packet
+        rawPacket=data[currentIndex:currentIndex + 1024]
+
+        #add the header Hpacket=packet with header
+        Hpacket=addPacketHeader(rawPacket)
+
+        #append the packet with the header to the list
+        packet.append(Hpacket)
+
+        #get the next packet
+        currentIndex += 1024
+
+        #for each packet get the checksum
+
+
     return packet
 
 #Client Functionality (called from main)
 def TCPClient(fileName):
+    #from socket import *
 
     #packet size in bytes
     packetSize = 1024
@@ -40,18 +54,25 @@ def TCPClient(fileName):
     #output message to indicate client startup/message contents
     print('Starting Client to send image: ', fileName)
 
-    #read file in, output error if fails
+#read file in here
     try:
         file = open(fileName,"rb")
     except:
-        print("File could not be opened...")
+        print("File coould not be opened...")
         return
 
-    #Create packets
+
+    if file.closed:
+        print("File could not be opened")
+
     packet = Make_Packets(file, packetSize)
 
-    #Close files
     file.close()
+
+
+#Split into packages here
+    #None functioning, need to send bytes, not lists
+   # packets = Make_Packets(file)
 
 #Transmit
 
@@ -62,31 +83,38 @@ def TCPClient(fileName):
     #create UDP Socket
     clientSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
+    #print("Number of packets to send: " + str(len(packet)))
 
-    #Loop for each packet that needs to be sent
     for i in range (0,len(packet)):
-        #Send packet
-        clientSocket.sendto(packet[i], (serverName, serverPort))
-        #Wait for a small delay before sending next packet (packets get lost if sent faster than server can recieve)
-        time.sleep(.01)
+        #print('Sending packet ' + str(i) + " of size " + str(len(packet[i])) + " Bytes ")
+        #Non functioning, need to send bytes, not lists
 
-    #Send code indicating end of file
+
+        #print(packet[i])
+        #print()
+
+        clientSocket.sendto(packet[i], (serverName, serverPort))
+
     time.sleep(0.1)
     clientSocket.sendto(b'stop', (serverName, serverPort))
 
-    #Output statement to command line and close socket
-    print("Finished sending file")
+
+#not using recvfrom (no server response expected)
+#recieve message being sent back to client
+#    modifiedSentence, server = clientSocket.recvfrom(2048)
+
+    #close socket
     clientSocket.close()
 
 #Main, used to start TCPClient and send name of passed file
 if __name__ == "__main__":
 
-    #Open file select menue
     root = tk.Tk()
     root.withdraw()
+
     file_path = filedialog.askopenfilename()
 
-    #check if file is selected
+    #check if input argument provided
     if len(file_path) <= 1:
         #output error if no input file provided
         print("Error: No input file specified")
