@@ -27,8 +27,9 @@ def addPacketHeader(packet):
     return packet
 
 
-
-
-
 def GetCheckSum(packet):
     return 0
+
+def coruptPacket(packet):
+    corruptpacket=packet
+    return corruptpacket

@@ -9,20 +9,24 @@ import socket
 #import system for command line arguments
 import sys
 from functions import *
+import random
 
 #import file dialog stuff
 import tkinter as tk
 from tkinter import filedialog
 
 
-def Make_Packets(file, packetFile):
+def Make_Packets(file, packetFile, corruptpercent):
+    #keep track of how many corrupt and non corrupt packets there are
+    corruptPacketsCount=0
+    cleanPakcetsCount=0
+
 
     #read in file
     data = file.read()
     currentIndex = 0
 
     #create packet list
-
     packet = []
 
     while(currentIndex < len(data)):
@@ -33,16 +37,30 @@ def Make_Packets(file, packetFile):
         #add the header Hpacket=packet with header
         Hpacket=addPacketHeader(rawPacket)
 
+
+        # determine if the packet will be corrupt
+        randomNum = random.randint(1, 100)
+
+        # if the random number is less than corrupt percent corrupt the packet
+        if(randomNum<=corruptpercent):
+            corruptPacketsCount+=1
+            Hpacket=coruptPacket(Hpacket)
+        else:
+            cleanPakcetsCount+=1
+
         #append the packet with the header to the list
         packet.append(Hpacket)
 
         #get the next packet
         currentIndex += 1024
 
-        #for each packet get the checksum
-
+    print("corrupt packets: " + str(corruptPacketsCount))
+    print("clean packets: "+str(cleanPakcetsCount))
 
     return packet
+
+
+
 
 #Client Functionality (called from main)
 def TCPClient(fileName):
@@ -65,14 +83,9 @@ def TCPClient(fileName):
     if file.closed:
         print("File could not be opened")
 
-    packet = Make_Packets(file, packetSize)
+    packet = Make_Packets(file, packetSize,10)
 
     file.close()
-
-
-#Split into packages here
-    #None functioning, need to send bytes, not lists
-   # packets = Make_Packets(file)
 
 #Transmit
 
@@ -83,25 +96,12 @@ def TCPClient(fileName):
     #create UDP Socket
     clientSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    #print("Number of packets to send: " + str(len(packet)))
-
     for i in range (0,len(packet)):
-        #print('Sending packet ' + str(i) + " of size " + str(len(packet[i])) + " Bytes ")
-        #Non functioning, need to send bytes, not lists
-
-
-        #print(packet[i])
-        #print()
-
         clientSocket.sendto(packet[i], (serverName, serverPort))
+        #time.sleep(0.001)
 
-    time.sleep(0.1)
     clientSocket.sendto(b'stop', (serverName, serverPort))
 
-
-#not using recvfrom (no server response expected)
-#recieve message being sent back to client
-#    modifiedSentence, server = clientSocket.recvfrom(2048)
 
     #close socket
     clientSocket.close()
