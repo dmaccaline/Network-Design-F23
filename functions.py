@@ -22,7 +22,7 @@ def binary_array_to_byte_array(binary_array):
 
     return byte_array
 
-def addPacketHeader(packet,sequenceNumber):
+def make_pkt(packet,sequenceNumber):
     #get checksum
     checkSum=GetCheckSum(packet)
 
@@ -37,36 +37,59 @@ def coruptPacket(packet):
 
 
 #send the packets corrupting some of them
-def udt_send(clientSocket,serverName,serverPort,packet,corruptPercent):
+def udt_send(sendingSocket,destination_addr,packet):
+    corruptPercent=0
     randomNum = random.randint(1, 100)
 
     # if the random number is less than corrupt percent corrupt the packet
     if (randomNum <= corruptPercent):
         packet=coruptPacket(packet)
 
-    clientSocket.sendto(packet, (serverName, serverPort))
+    sendingSocket.sendto(packet, destination_addr)
 
-
-
-
-def rdt_send(clientSocket,serverName,serverPort,packet):
-
-    #add a header to the packet
-    Hpacket=addPacketHeader(packet,0)
-
-    #udt send packet
-    udt_send(clientSocket,serverName,serverPort,Hpacket,0)
-
-    #wait to recieve a reply
-    print('here')
+def rdt_rcv(recievingSocket):
     while True:
         #print("test")
-        #data, addr = clientSocket.recvfrom(1024) # buffer size is 1024 bytes
-        break
+            data, addr = recievingSocket.recvfrom(1024) # buffer size is 1024 bytes
+            return data, addr
 
 
 
 
 
+def rdt_send(clientSocket,serverName,serverPort,data):
 
 
+    for i in range (0,len(data)):
+
+        sequenceNum=i%2
+
+        flag=True
+        #print(data[i])
+        sendpkt = make_pkt(data[i], sequenceNum)
+
+        if(flag):
+            #udt send packet
+            udt_send(clientSocket,(serverName,serverPort),sendpkt)
+            # wait to recieve a packet
+            rcvpkt, addr = rdt_rcv(clientSocket)
+
+            if(corrupt(rcvpkt) or (not isAck(rcvpkt,sequenceNum))):
+               flag=False
+
+
+    #send the stop bit
+    udt_send(clientSocket, (serverName, serverPort), b'stop')
+
+
+
+
+
+#tells you if a packet is corrupt or not
+def corrupt(rcvPacket):
+    return False
+
+
+#tells you if a packet is acknoledged
+def isAck(rcvPckt,sequenceNumber):
+    return True

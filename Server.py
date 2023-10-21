@@ -5,6 +5,7 @@ Authors: Daniel Maccaline and Nathan Grady
 """
 
 import socket
+from functions import *
 import os
 
 
@@ -27,10 +28,16 @@ def TCPServer():
     #Loop forever, continually read messages sent to socket
     while True:
         #Recieve message, store message in sentence, store address of client that sent message to clientAddress
-        sentence, clientAddress = serverSocket.recvfrom(2048)
+
+
+        #server finite stat machine
+
+        #recieve
+        data, addr =rdt_rcv(serverSocket)
+
 
         #if passed sentence = stop code
-        if(sentence==b'stop'):
+        if(data==b'stop'):
             #store created output to bmp file and open the file
             f = open("temp.bmp", "wb")
             f.write(frame)
@@ -43,7 +50,8 @@ def TCPServer():
 
         else:
             #if not at end of file, concatenate sentence to frame
-            frame+=sentence
+            udt_send(serverSocket, addr, b'hello')
+            frame+=data
 
 
 #Main method used to start server

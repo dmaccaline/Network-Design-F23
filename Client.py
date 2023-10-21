@@ -74,19 +74,13 @@ def TCPClient(fileName):
     # create UDP Socket
     clientSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    #we have a list of raw packets. for each packet
-    #transmit packets one at time over rdt
-
-    for i in range(0, len(rawpackets)):
-
-        #relably send all the packets
-        rdt_send(clientSocket, serverName, serverPort, rawpackets[i])
-
-    #send stop bit
-    rdt_send(clientSocket, serverName, serverPort, b'stop')
-
+    rdt_send(clientSocket, serverName, serverPort, rawpackets)
     clientSocket.close()
     # endregion
+
+
+
+
 
 
 
