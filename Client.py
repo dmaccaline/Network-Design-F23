@@ -45,7 +45,7 @@ def Get_Packets_Raw(file, packetFile):
 
 #Client Functionality (called from main)
 def TCPClient(fileName):
-
+    global sequenceNum
     # region Make packets from file
 
     # packet size in bytes
@@ -62,7 +62,7 @@ def TCPClient(fileName):
         print("File could not be opened")
 
     #raw packets means just the packet with no header or anything yet
-    rawpackets = Get_Packets_Raw(file, packetSize)
+    data = Get_Packets_Raw(file, packetSize)
 
     file.close()
     # endregion
@@ -74,7 +74,16 @@ def TCPClient(fileName):
     # create UDP Socket
     clientSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    rdt_send(clientSocket, serverName, serverPort, rawpackets)
+    #send packets one at a time
+    for i in range (0,len(data)):
+        rdt_send(clientSocket, serverName, serverPort, data[i])
+        print("sending packet number ",i)
+
+    #send stop bit
+    rdt_send(clientSocket, serverName, serverPort, b'stop')
+
+
+
     clientSocket.close()
     # endregion
 

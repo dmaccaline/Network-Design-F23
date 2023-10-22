@@ -25,19 +25,18 @@ def TCPServer():
     #output message indicating ready to recieve
     print('The server is ready to recieve')
 
+    count=0
     #Loop forever, continually read messages sent to socket
     while True:
-        #Recieve message, store message in sentence, store address of client that sent message to clientAddress
+        #
 
-
-        #server finite stat machine
-
-        #recieve
-        data, addr =rdt_rcv(serverSocket)
+        rcvPacket, addr =rdt_rcv(serverSocket)
+        print("recieved packet: ", count)
+        count+=1
 
 
         #if passed sentence = stop code
-        if(data==b'stop'):
+        if(rcvPacket==b'stop'):
             #store created output to bmp file and open the file
             f = open("temp.bmp", "wb")
             f.write(frame)
@@ -50,8 +49,7 @@ def TCPServer():
 
         else:
             #if not at end of file, concatenate sentence to frame
-            udt_send(serverSocket, addr, b'hello')
-            frame+=data
+            frame+=rcvPacket
 
 
 #Main method used to start server
