@@ -26,20 +26,19 @@ def Get_Packets_Raw(file, packetFile):
 
     while(currentIndex < len(data)):
 
+
         #extract just the data from the packet
         rawPacket=data[currentIndex:currentIndex + 1024]
 
-        packet.append(rawPacket)
+        #convert the byte array to an array of binary variables to reprsent the bits
+        binaryPacket=byte_array_to_binary_array(rawPacket)
+
+
+        packet.append(binaryPacket)
 
         currentIndex += 1024
 
     return packet
-
-
-
-
-
-
 
 
 
@@ -80,18 +79,15 @@ def TCPClient(fileName):
         print("sending packet number ",i)
 
     #send stop bit
-    rdt_send(clientSocket, serverName, serverPort, b'stop')
+    stopbit=byte_array_to_binary_array(b'stop')
+    rdt_send(clientSocket, serverName, serverPort,stopbit )
+    print("sending stop bit: ")
+    print()
 
 
 
     clientSocket.close()
     # endregion
-
-
-
-
-
-
 
 
 #Main, used to start TCPClient and send name of passed file
