@@ -5,7 +5,7 @@ Authors: Daniel Maccaline and Nathan Grady
 """
 
 import socket
-from functions import *
+from send_receive import *
 import os
 
 
@@ -36,7 +36,6 @@ def TCPServer():
 
         #print(rcvPacket)
         #if passed sentence = stop code
-        print(binary_array_to_byte_array(rcvPacket))
         if(binary_array_to_byte_array(rcvPacket)==b'stop'):
             count=0
             #store created output to bmp file and open the file

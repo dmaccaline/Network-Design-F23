@@ -8,7 +8,7 @@ import time
 import socket
 #import system for command line arguments
 import sys
-from functions import *
+from send_receive import *
 
 #import file dialog stuff
 import tkinter as tk
@@ -28,13 +28,11 @@ def Get_Packets_Raw(file, packetFile):
 
 
         #extract just the data from the packet
-        rawPacket=data[currentIndex:currentIndex + 1024]
+        bytesdata=data[currentIndex:currentIndex + 1024]
 
-        #convert the byte array to an array of binary variables to reprsent the bits
-        binaryPacket=byte_array_to_binary_array(rawPacket)
+        binpackt=byte_array_to_binary_array(bytesdata)
 
-
-        packet.append(binaryPacket)
+        packet.append(binpackt)
 
         currentIndex += 1024
 
@@ -79,15 +77,18 @@ def TCPClient(fileName):
         print("sending packet number ",i)
 
     #send stop bit
-    stopbit=byte_array_to_binary_array(b'stop')
-    rdt_send(clientSocket, serverName, serverPort,stopbit )
-    print("sending stop bit: ")
-    print()
+    rdt_send(clientSocket, serverName, serverPort, byte_array_to_binary_array(b'stop'))
 
 
 
     clientSocket.close()
     # endregion
+
+
+
+
+
+
 
 
 #Main, used to start TCPClient and send name of passed file
