@@ -1,16 +1,18 @@
 import random
 
 def make_pkt(seq,data):
-    chksum=GetCheckSum(data)
+    #packet format seq,chksum,data
+
+    packet=seq+data
+    chksum = GetCheckSum(packet)
+    packet=chksum+packet
+
     return data
 
 def extract(rcvpkt):
-    #get rid of the header, so just take off the first 17 bits
-    pckt=rcvpkt
-    seq=0
-    chksum=0
-
-
+    chksum = rcvpkt[0:1] #chksum is 1st and 2nd bit
+    seq = rcvpkt[0]  # sequence num should be 4th bit
+    pckt=rcvpkt[3:] #packet starts at the 4th bit
 
     return pckt,seq,chksum
 
@@ -29,7 +31,7 @@ def GetCheckSum(packet):
         #add the integer to the pre existing checksum
         chksum+=intslice
 
-        #if th chksum is greater than 65536 than subtrack 65535
+        #if the chksum is greater than 65536 than subtrack 65535
         if(chksum>=65536):
             chksum-=65535
         currentIndex += 2
@@ -45,7 +47,6 @@ def GetCheckSum(packet):
 
 
 #you give it a packet and it corrupts it for you
-#corrupt just tells you if it is corrupt or not
 def coruptPacket(packet):
     corruptpacket =packet+b'corrupt'
     return corruptpacket
@@ -54,7 +55,14 @@ def coruptPacket(packet):
 
 #tells you if a packet is corrupt or not
 def corrupt(rcvPacket):
-    return False
+    recieved_chksum=rcvPacket[0:1] #checksum is the first two bits
+
+    #take the checksum off of the front of the packt
+    packet=rcvPacket[2:] #take the chksum off of the front of the packet
+
+    calculated_chksum=GetCheckSum(packet)
+
+    return (calculated_chksum==recieved_chksum)
 
 
 
