@@ -80,7 +80,7 @@ def rdt_rcv(recievingSocket):
 
     #if we get here it means the data is good
     #extract the data
-    data=extract(rcvPacket)
+    data,test,test=extract(rcvPacket)
 
     #iterate the epected sequence num
     expected_sequence_Num=(expected_sequence_Num+1)%2
