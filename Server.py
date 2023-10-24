@@ -13,7 +13,7 @@ import os
 def TCPServer():
 
     #string of bytes to hold passed file
-    frame=[]
+    frame=b''
 
     #Define server port number
     serverPort = 11000
@@ -36,15 +36,12 @@ def TCPServer():
 
         #print(rcvPacket)
         #if passed sentence = stop code
-        if(binary_array_to_byte_array(rcvPacket)==b'stop'):
+        if(rcvPacket==b'stop'):
             count=0
             #store created output to bmp file and open the file
 
-            #convert it back to bytes sigh
-            bytedata=binary_array_to_byte_array(frame)
-
             f = open("temp.bmp", "wb")
-            f.write(bytedata)
+            f.write(frame)
             f.close()
             os.startfile("temp.bmp")
 

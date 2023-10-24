@@ -30,9 +30,7 @@ def Get_Packets_Raw(file, packetFile):
         #extract just the data from the packet
         bytesdata=data[currentIndex:currentIndex + 1024]
 
-        binpackt=byte_array_to_binary_array(bytesdata)
-
-        packet.append(binpackt)
+        packet.append(bytesdata)
 
         currentIndex += 1024
 
@@ -77,7 +75,7 @@ def TCPClient(fileName):
         print("sending packet number ",i)
 
     #send stop bit
-    rdt_send(clientSocket, serverName, serverPort, byte_array_to_binary_array(b'stop'))
+    rdt_send(clientSocket, serverName, serverPort, b'stop')
 
 
 
