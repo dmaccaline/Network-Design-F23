@@ -3,11 +3,9 @@ TCP Server
 Authors: Daniel Maccaline and Nathan Grady
   Based on code from phase 1 (Daniel Maccaline)
 """
-
 import socket
 from send_receive import *
 import os
-
 
 
 def TCPServer():
@@ -28,24 +26,23 @@ def TCPServer():
     count=0
     #Loop forever, continually read messages sent to socket
     while True:
-        #
 
         rcvPacket, addr =rdt_rcv(serverSocket)
-        print("recieved packet: ", count)
-        print()
+        if(printflag):  print("recieved packet: ", count)
+        if(printflag):  print()
         count+=1
 
-        #print(rcvPacket)
         #if passed sentence = stop code
         if(rcvPacket==b'stop'):
             count=0
             #store created output to bmp file and open the file
 
-            f = open("temp.bmp", "wb")
+            f = open("temp.jpg", "wb")
             f.write(frame)
             f.close()
-            os.startfile("temp.bmp")
+            os.startfile("temp.jpg")
 
+            #clear the frame
             frame = []
             #Output completion statement
             print("Finished recieving file\nFile opened in seperate window")

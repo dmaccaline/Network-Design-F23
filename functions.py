@@ -1,5 +1,7 @@
 import random
 
+printflag=False
+
 def make_pkt(seq,data):
     #packet format =  seq,chksum,data
     seq=int.to_bytes(seq, 1, "big")
@@ -10,6 +12,7 @@ def make_pkt(seq,data):
     return packet
 
 def extract(rcvpkt):
+
     chksum = rcvpkt[0:2] #chksum is 1st and 2nd bit
 
     seq = rcvpkt[2:3]  # sequence num should be 3rd bit
@@ -27,26 +30,21 @@ def GetCheckSum(packet):
     while(currentIndex < len(packet)):
         byteslice=packet[currentIndex:currentIndex + 2]
 
-
         #convert the byte slice to int
         intslice=int.from_bytes(byteslice, "big")
 
         #add the integer to the pre existing checksum
         chksum+=intslice
 
-        #if the chksum is greater than 65536 than subtrack 65535
+        #if the chksum is greater than 65536 than subtrack 65535 (this is the decimal equivlent of
+        #getting rid of the 17th 1 in binary and the adding 1 on the lsb
         if(chksum>=65536):
             chksum-=65535
         currentIndex += 2
     # convert integer back to byte slice
     chksum_byte = int.to_bytes(chksum, 2, "big")
-    #print("checksum bytes: ",chksum_byte)
-    #print("checksum int: ", chksum)
-    #print("checksum binary: ", bin(chksum))
 
     return chksum_byte
-
-
 
 
 #you give it a packet and it corrupts it for you
@@ -65,8 +63,8 @@ def corrupt(rcvPacket):
     calculated_chksum=GetCheckSum(packet)#calculate the actual chksum of the packet so you can compare it
     #to the recieved one
 
-    print("     recieved chksum: ",recieved_chksum)
-    print("     calculated chksum: ", calculated_chksum)
+    if(printflag):    print("     recieved chksum: ",recieved_chksum)
+    if(printflag):    print("     calculated chksum: ", calculated_chksum)
 
     return (not(recieved_chksum==calculated_chksum))
 

@@ -3,36 +3,28 @@ TCP Client
 Authors: Daniel Maccaline and Nathan Grady
   Based on code from phase 1 (Daniel Maccaline)
 """
-import time
-#import socket library
 import socket
-#import system for command line arguments
-import sys
-from send_receive import *
-
-#import file dialog stuff
 import tkinter as tk
 from tkinter import filedialog
+from send_receive import *
 
-
-def Get_Packets_Raw(file, packetFile):
-
-    data = file.read()
+def Get_Packets_Raw(file, packetsize):
 
     currentIndex = 0
+
+    data = file.read()
 
     #create packet list
     packet = []
 
     while(currentIndex < len(data)):
 
-
         #extract just the data from the packet
-        bytesdata=data[currentIndex:currentIndex + 1024]
+        bytesdata=data[currentIndex:currentIndex + packetsize]
 
         packet.append(bytesdata)
 
-        currentIndex += 1024
+        currentIndex += packetsize
 
     return packet
 
@@ -40,8 +32,6 @@ def Get_Packets_Raw(file, packetFile):
 
 #Client Functionality (called from main)
 def TCPClient(fileName):
-    global sequenceNum
-    # region Make packets from file
 
     # packet size in bytes
     packetSize = 1024
@@ -70,22 +60,19 @@ def TCPClient(fileName):
     clientSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
     #send packets one at a time
-    for i in range (0,len(data)):
-        rdt_send(clientSocket, serverName, serverPort, data[i])
-        print("sending packet number ",i)
+    try:
+        for i in range (0,len(data)):
+            rdt_send(clientSocket, serverName, serverPort, data[i])
+            if(printflag):      print("sending packet number ",i)
 
-    #send stop bit
-    rdt_send(clientSocket, serverName, serverPort, b'stop')
-
+        #send stop bit
+        rdt_send(clientSocket, serverName, serverPort, b'stop')
+    except:
+        print("ther server is probably down")
 
 
     clientSocket.close()
     # endregion
-
-
-
-
-
 
 
 
