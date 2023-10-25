@@ -8,23 +8,34 @@ def rdt_send(clientSocket,serverName,serverPort,data):
         flag=True
 
         #make the packet
-        sendpkt = make_pkt(['0'],data)
+        sendpkt = make_pkt(sequenceNum,data)
 
         #basically we keep sending the same packet until we get the response wanted
-        if(flag):
-            print("     sending sequnce number : ", sequenceNum)
+        while(flag):
             #udt send packet
             udt_send(clientSocket,(serverName,serverPort),sendpkt)
             # wait to recieve a packet
             rcvpkt, addr = udt_rcv(clientSocket)
 
-            #if the response is bad do the loop again bad=corrupt or wrong sequnce number
-            if(corrupt(rcvpkt)):
-               flag=False
+            #extract the data from the packet
+            data, recieved_sequence_num, chksum = extract(rcvpkt)
+            print("     sent sequnce num: ", sequenceNum)
+            print("     recivied seq: ", recieved_sequence_num)
+
+            flag=False
+            #if the recieved packet is corrupt  or the wrong sequnce number do the loop again
+            if(corrupt(rcvpkt)or (not (recieved_sequence_num==sequenceNum))):
+
+                #the data segment of the recieved packet should be the checksum
+                print("corrupt")
+                flag=True
 
 
         #if we get here that means we like the repsonse we got and we can iterate the
         #sequence number and then move on
+        print()
+        print()
+        print()
         sequenceNum = (sequenceNum + 1) % 2
 
 
@@ -53,34 +64,43 @@ def udt_rcv(recievingSocket):
 
 
 expected_sequence_Num=0
-sndpkt = make_pkt([0], b'generic response')
+sndpkt = make_pkt(0, b'generic response')
 def rdt_rcv(recievingSocket):
     global expected_sequence_Num
     global sndpkt
     flag=True
-    recievedsequencNUm=0
 
     while(flag):
+
+
         flag = False
         #get the data
         rcvPacket, addr=udt_rcv(recievingSocket)
 
+        # extract the data
+        data,recieved_sequence_num,chksum = extract(rcvPacket)
+
+        print("     expecting sequnce num: ",expected_sequence_Num)
+        print("     recivied seq: ",recieved_sequence_num)
+
+
+
+        #get the sequence number off of the
         #for now just read as 'if bad packet' bad=corrupt or wrong sequnce number
-        if(corrupt(rcvPacket)):
+        if(corrupt(rcvPacket) or (not (recieved_sequence_num==expected_sequence_Num))):
             #keep previous response do the loop again
+            print("     corrupt")
             flag=True
         else:
             #make good response, exit loop
-            sndpkt=make_pkt(['0'],b'genericresponse')
+            sndpkt=make_pkt(expected_sequence_Num,b'Acknoledge')
 
         # reply to the data with either "good" repsonse or the previous response
-        print("     sending ACK:",expected_sequence_Num)
         udt_send(recievingSocket, addr, sndpkt)
 
 
     #if we get here it means the data is good
-    #extract the data
-    data,test,test=extract(rcvPacket)
+
 
     #iterate the epected sequence num
     expected_sequence_Num=(expected_sequence_Num+1)%2

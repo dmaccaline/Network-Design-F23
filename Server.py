@@ -32,6 +32,7 @@ def TCPServer():
 
         rcvPacket, addr =rdt_rcv(serverSocket)
         print("recieved packet: ", count)
+        print()
         count+=1
 
         #print(rcvPacket)
