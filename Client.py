@@ -59,7 +59,11 @@ def TCPClient(fileName):
 
     #send packets one at a time
     try:
-        print("sending ",len(data),"packets at a corruption rate of ",corruptPercent,"%")
+        print("sending ",len(data),"packets")
+        print("corruption rate from the client to the server is: ",corruptPercent_client_to_server,"%")
+        print("corruption rate from the server to the client is: ",corruptPercent_server_to_client,"%")
+        print()
+
         start_time = datetime.datetime.now()
 
         for i in range (0,len(data)):

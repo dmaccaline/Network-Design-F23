@@ -12,7 +12,7 @@ def rdt_send(clientSocket,serverName,serverPort,data):
         #basically we keep sending the same packet until we get the response wanted
         while(flag):
             #udt send packet
-            udt_send(clientSocket,(serverName,serverPort),sendpkt)
+            udt_send(clientSocket,(serverName,serverPort),sendpkt,corruptPercent_client_to_server)
             # wait to recieve a packet
             rcvpkt, addr = udt_rcv(clientSocket)
 
@@ -38,7 +38,7 @@ def rdt_send(clientSocket,serverName,serverPort,data):
 
 
 #send the packets corrupting some of them
-def udt_send(sendingSocket,destination_addr,packet):
+def udt_send(sendingSocket,destination_addr,packet,corruptPercent):
 
     randomNum = random.randint(1, 100)
 
@@ -87,7 +87,7 @@ def rdt_rcv(recievingSocket):
             sndpkt=make_pkt(expected_sequence_Num,b'Acknoledge')
 
         # reply to the data with either "good" repsonse or the previous response
-        udt_send(recievingSocket, addr, sndpkt)
+        udt_send(recievingSocket, addr, sndpkt,corruptPercent_server_to_client)
 
     #if we get here it means the data is good
 

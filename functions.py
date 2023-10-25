@@ -1,6 +1,7 @@
 import random
-printflag=False
-corruptPercent = 55
+printflag=True
+corruptPercent_client_to_server = 5
+corruptPercent_server_to_client=0
 
 
 def make_pkt(seq,data):
