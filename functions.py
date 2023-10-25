@@ -1,6 +1,7 @@
 import random
-
 printflag=False
+corruptPercent = 55
+
 
 def make_pkt(seq,data):
     #packet format =  seq,chksum,data

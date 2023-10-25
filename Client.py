@@ -7,6 +7,7 @@ import socket
 import tkinter as tk
 from tkinter import filedialog
 from send_receive import *
+import datetime
 
 def Get_Packets_Raw(file, packetsize):
 
@@ -27,8 +28,6 @@ def Get_Packets_Raw(file, packetsize):
         currentIndex += packetsize
 
     return packet
-
-
 
 #Client Functionality (called from main)
 def TCPClient(fileName):
@@ -52,7 +51,6 @@ def TCPClient(fileName):
     file.close()
     # endregion
 
-    # region Transmit Packets
     # set server name and port to expect server at
     serverName = 'localhost'
     serverPort = 11000
@@ -61,18 +59,27 @@ def TCPClient(fileName):
 
     #send packets one at a time
     try:
+        print("sending ",len(data),"packets at a corruption rate of ",corruptPercent,"%")
+        start_time = datetime.datetime.now()
+
         for i in range (0,len(data)):
             rdt_send(clientSocket, serverName, serverPort, data[i])
             if(printflag):      print("sending packet number ",i)
 
         #send stop bit
         rdt_send(clientSocket, serverName, serverPort, b'stop')
+
+        end_time=datetime.datetime.now()
+        print()
+        print("finished sending")
+        print("start: ",start_time," end:",end_time)
+        print("total time: ",(end_time-start_time))
+
     except:
         print("ther server is probably down")
 
 
     clientSocket.close()
-    # endregion
 
 
 

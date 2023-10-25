@@ -40,7 +40,6 @@ def rdt_send(clientSocket,serverName,serverPort,data):
 #send the packets corrupting some of them
 def udt_send(sendingSocket,destination_addr,packet):
 
-    corruptPercent=0
     randomNum = random.randint(1, 100)
 
     # if the random number is less than corrupt percent corrupt the packet

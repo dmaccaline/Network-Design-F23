@@ -43,7 +43,7 @@ def TCPServer():
             os.startfile("temp.jpg")
 
             #clear the frame
-            frame = []
+            frame = b''
             #Output completion statement
             print("Finished recieving file\nFile opened in seperate window")
 
