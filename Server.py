@@ -8,7 +8,7 @@ from send_receive import *
 import os
 
 
-def TCPServer():
+def UDPServer():
 
     #string of bytes to hold passed file
     frame=b''
@@ -37,10 +37,10 @@ def TCPServer():
             count=0
             #store created output to bmp file and open the file
 
-            f = open("temp.jpg", "wb")
+            f = open("temp.bmp", "wb")
             f.write(frame)
             f.close()
-            os.startfile("temp.jpg")
+            os.startfile("temp.bmp")
 
             #clear the frame
             frame = b''
@@ -54,4 +54,4 @@ def TCPServer():
 
 #Main method used to start server
 if __name__ == "__main__":
-    TCPServer()
+    UDPServer()

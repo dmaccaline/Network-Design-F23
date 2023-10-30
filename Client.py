@@ -8,6 +8,7 @@ import tkinter as tk
 from tkinter import filedialog
 from send_receive import *
 import datetime
+import time
 
 def Get_Packets_Raw(file, packetsize):
 
@@ -30,7 +31,7 @@ def Get_Packets_Raw(file, packetsize):
     return packet
 
 #Client Functionality (called from main)
-def TCPClient(fileName):
+def UDPClient(fileName):
 
     # packet size in bytes
     packetSize = 1024
@@ -39,7 +40,7 @@ def TCPClient(fileName):
     try:
         file = open(fileName, "rb")
     except:
-        print("File coould not be opened...")
+        print("File could not be opened...")
         return
 
     if file.closed:
@@ -50,6 +51,7 @@ def TCPClient(fileName):
 
     file.close()
     # endregion
+
 
     # set server name and port to expect server at
     serverName = 'localhost'
@@ -77,18 +79,24 @@ def TCPClient(fileName):
         print()
         print("finished sending")
         print("start: ",start_time," end:",end_time)
+        time = end_time-start_time
         print("total time: ",(end_time-start_time))
 
     except:
         print("ther server is probably down")
 
-
     clientSocket.close()
+    #Return time taken in microseconds and seconds
+    return time.microseconds, time.seconds
 
 
 
 #Main, used to start TCPClient and send name of passed file
 if __name__ == "__main__":
+
+    #Variables used for automatic tests, Iterations -> Number of tests, runMultipleTests bool used to control if tests are done
+    iterations = 3
+    runMultipleTests = False
 
     root = tk.Tk()
     root.withdraw()
@@ -100,5 +108,25 @@ if __name__ == "__main__":
         #output error if no input file provided
         print("Error: No input file specified")
     else:
-        #pass input file name to client
-        TCPClient(file_path)
+
+        #if not running multiple, just call UDP client and disregard returns
+        if not runMultipleTests:
+            #pass input file name to client
+            UDPClient(file_path)
+        else:
+            #Store number of iterations for denominator of average calc
+            avgDen = iterations
+            #Stores time returned by function
+            timeR = 0
+            #iterate for (iterations) times
+            while(iterations > 0):
+                print("\n\n\nStarting run " + str(avgDen-iterations))
+                iterations = iterations - 1
+                #Function returns time spent in microseconds and seconds
+                micros, sec = UDPClient(file_path)
+                #add time to timeR, dividing micros to adjust
+                timeR = timeR + micros/1000000 + sec
+                #sleep before next call (avg time goes up without this sleep)
+                time.sleep(1)
+            #print average results
+            print("Average results: ", str(timeR/avgDen))

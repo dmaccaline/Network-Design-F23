@@ -1,12 +1,19 @@
 import random
 printflag=False
-corruptPercent_client_to_server = 50
-corruptPercent_server_to_client=12
+#NOTE: Below values are in % (60 -> 60% chance of corruption or probablility of .6 to corrupt)
+corruptPercent_client_to_server = 40
+corruptPercent_server_to_client= 40
 
 
 def make_pkt(seq,data):
     #packet format =  seq,chksum,data
-    seq=int.to_bytes(seq, 1, "big")
+    #Note: Sequence number 0 is encoded as 00000000 and Sequence number 1 is encoded as 11111111 (255)
+    if(seq == 1):
+        seq = int.to_bytes(255, 1, "big")
+    else:
+        seq = int.to_bytes(seq, 1, "big")
+
+    #seq=int.to_bytes(seq, 1, "big")
     packet=seq+data
     chksum = GetCheckSum(packet)
     packet=chksum+packet
@@ -15,12 +22,16 @@ def make_pkt(seq,data):
 
 def extract(rcvpkt):
 
-    chksum = rcvpkt[0:2] #chksum is 1st and 2nd bit
+    chksum = rcvpkt[0:2] #chksum is 1st and 2nd Byte
 
-    seq = rcvpkt[2:3]  # sequence num should be 3rd bit
+    seq = rcvpkt[2:3]  # sequence num should be 3rd Byte
+
     seqinteger = int.from_bytes(seq, "big")
 
-    pckt=rcvpkt[3:] #packet starts at the 4th bit
+    if(seqinteger == 255):
+        seqinteger = 1
+
+    pckt=rcvpkt[3:] #packet starts at the 4th Byte
 
     return pckt, seqinteger, chksum
 

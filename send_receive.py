@@ -8,7 +8,7 @@ def rdt_send(clientSocket,serverName,serverPort,data):
 
         #make the packet
         sendpkt = make_pkt(sequenceNum,data)
-
+#
         #basically we keep sending the same packet until we get the response wanted
         while(flag):
             #udt send packet
@@ -24,11 +24,10 @@ def rdt_send(clientSocket,serverName,serverPort,data):
             flag=False
             #if the recieved packet is corrupt  or the wrong sequnce number do the loop again
             if(corrupt(rcvpkt)or (not (recieved_sequence_num==sequenceNum))):
-
                 if(printflag):      print("corrupt")
                 flag=True
 
-
+#Test
         #if we get here that means we like the repsonse we got and we can iterate the
         #sequence number and then move on
         if(printflag): print()
@@ -58,7 +57,7 @@ def udt_rcv(recievingSocket):
 
 
 expected_sequence_Num=0
-sndpkt = make_pkt(0, b'generic response')
+sndpkt = make_pkt(1, b'generic response')
 def rdt_rcv(recievingSocket):
     global expected_sequence_Num
     global sndpkt
@@ -84,7 +83,7 @@ def rdt_rcv(recievingSocket):
             flag=True
         else:
             #make good response, exit loop
-            sndpkt=make_pkt(expected_sequence_Num,b'Acknoledge')
+            sndpkt=make_pkt(expected_sequence_Num,b'')
 
         # reply to the data with either "good" repsonse or the previous response
         udt_send(recievingSocket, addr, sndpkt,corruptPercent_server_to_client)
@@ -95,4 +94,4 @@ def rdt_rcv(recievingSocket):
     expected_sequence_Num=(expected_sequence_Num+1)%2
 
     #deliver the data
-    return  data, addr
+    return data, addr
