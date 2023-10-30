@@ -1,42 +1,24 @@
 Daniel Maccaline
 
-Time commitment: Not accuratly tracked, estimated ~8H
+Time commitment:
 
 Design contribution:
-Current file creation/viewing system
-Client side package splitting
-Server response to control packet speed
 
 Coding contribution:
-Created initial files, and contriuted server/client from part 1 as base for coding
-Command line file select (removed in favor of dialog box
-Added code to open file, split file into packets, and have client send/server recieve packets
-Changed how file is created/displayed so it does not rely on Pillow (originally added by nathan)
-Fixed issue of client sending packets faster than server could recieve
-Created README.txt and DesignDoc.docx
 
 Debugging contribution:
-Determined why only a small portion of packets were arriving at the server side (client sent too fast)
 
 Report preparation:
-Created README.txt, DesignDoc.docx
 
 
 Nathan Grady
 
-Time commitment: Not accuratly tracked, estimated ~5H
+Time commitment:
 
 Design contribution:
-sever side rebuilding of packets
-client side indication of the last packet of a file
 
 Coding contribution:
-added code to select a file from a file dialog box
-added code to reassemble packets
-added code to view the image
 
 Debugging contribution:
-N/A
 
 Report preparation:
-contributed to DesignDoc.docx
