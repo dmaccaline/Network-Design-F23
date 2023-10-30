@@ -22,12 +22,16 @@ Wrote TimeAnalysis.docx to show results from tests
 
 Nathan Grady
 
-Time commitment:
+Time commitment:10 hours
 
 Design contribution:
+made rdt_ send/ receive as well as the functions needed to make these functions
 
 Coding contribution:
+made rdt_send/receive functions as well as the functions needed to make these functions
 
 Debugging contribution:
+dubugged all functions until they worked
 
 Report preparation:
+N/A
