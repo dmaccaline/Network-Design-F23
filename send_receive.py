@@ -39,13 +39,15 @@ def rdt_send(clientSocket,serverName,serverPort,data):
 #send the packets corrupting some of them
 def udt_send(sendingSocket,destination_addr,packet,corruptPercent):
 
-    randomNum = random.randint(1, 100)
+    randomNumC = random.randint(1, 100) #for corrupting
+    randomNumL = random.randint(0, 99) #for losing packets
 
     # if the random number is less than corrupt percent corrupt the packet
-    if (randomNum <= corruptPercent):
+    if (randomNumC <= corruptPercent):
         packet=coruptPacket(packet)
 
-    sendingSocket.sendto(packet, destination_addr)
+    if(randomNumL<(100-loss_Percent)):
+        sendingSocket.sendto(packet, destination_addr)
 
 
 def udt_rcv(recievingSocket):

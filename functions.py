@@ -1,8 +1,9 @@
 import random
-printflag=False
+printflag=True
 #NOTE: Below values are in % (60 -> 60% chance of corruption or probablility of .6 to corrupt)
 corruptPercent_client_to_server = 40
 corruptPercent_server_to_client= 40
+loss_Percent=0;
 
 
 def make_pkt(seq,data):

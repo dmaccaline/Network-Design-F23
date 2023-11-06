@@ -1,0 +1,13 @@
+ToDo:
+
+UDP_send:
+Change the udp_send function to drop some of the packets
+
+rdt_send:
+
+send
+start timer
+if we recieve an acknoledgement that is bad, do nothing
+if we the timer runs out retransmit
+if we recieve a good acknoledgement move on
+
