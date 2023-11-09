@@ -1,9 +1,9 @@
 import random
-printflag=True
+printflag=False
 #NOTE: Below values are in % (60 -> 60% chance of corruption or probablility of .6 to corrupt)
-corruptPercent_client_to_server = 40
-corruptPercent_server_to_client= 40
-loss_Percent=0;
+corruptPercent_client_to_server = 0
+corruptPercent_server_to_client= 0
+loss_Percent=60
 
 
 def make_pkt(seq,data):
@@ -81,6 +81,3 @@ def corrupt(rcvPacket):
     if(printflag):    print("     calculated chksum: ", calculated_chksum)
 
     return (not(recieved_chksum==calculated_chksum))
-
-
-
