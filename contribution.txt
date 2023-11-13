@@ -1,37 +1,31 @@
 Daniel Maccaline
 
-Time commitment:
+Time commitment: 6
 
 Design contribution:
-Reworked acknoledgement system
-Added ability for client to send files multiple times for easier averaging accross multiple runs
+Designed timer and timer interrupt for timeout
 
 Coding contribution:
-Removed data section of acknoledgment (unneeded data)
-Changed how sequence numbers were sent in acknoledgment
-Coded section to run client multiple times and average results
+Coded timer
+Coded logic to allow the timer to interupt the recvfrom function.
+Coded logic to re-transmit packets after the timer had expired
 
 Debugging contribution:
-Found and fixed bug causing code to get stuck on initial packet
+N/A
 
 Report preparation:
-Wrote DesignDoc
-Wrote README.txt
-Ran tests to determine the average time at different loss levels
-Wrote TimeAnalysis.docx to show results from tests
+Updated README
+gathered data for performance analysis
 
 Nathan Grady
 
-Time commitment:10 hours
+Time commitment:
 
 Design contribution:
-made rdt_ send/ receive as well as the functions needed to make these functions
 
 Coding contribution:
-made rdt_send/receive functions as well as the functions needed to make these functions
 
 Debugging contribution:
-dubugged all functions until they worked
 
 Report preparation:
-N/A
+

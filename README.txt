@@ -8,8 +8,6 @@ Files submitted
 	- README.txt (this file)
 	- DesignDoc.docx
 		- Word file containing details about the program and its execution
-	- TimeAnalysis.docx
-	    - Word file containing information about the time take to send file and plot
 	- server.py
 		- File containing code for the UDP server, acts as reciever
 	- client.py
@@ -50,6 +48,14 @@ Both of the below assume debug output is false. See design doc for output when d
 
     -Client output:
         Will open a file select window when run.  From this, select a BMP file
+        After selecting a file, but before sending it, the client will print channel loss settings to the terminal:
+          sending x packets
+          corruption rate from the client to the server is: A%
+          corruption rate from the server to the client is: B%
+          packet loss rate client to server is: C%
+          packet loss rate server to client is: D%
+        Where x is the number of packets, and A, B, C, and D are the percent chance a file is lost or corrupted
+
         When complete, prints:
           Finished sending file
           start: [Time, y-m-d hr-min-s-ms]    end: [Time, y-m-d hr-min-s-ms]
