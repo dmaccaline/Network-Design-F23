@@ -46,7 +46,7 @@ def UDPServer():
             frame = b''
             #Output completion statement
             print("Finished recieving file\nFile opened in seperate window")
-            return
+
 
         else:
             #if not at end of file, concatenate sentence to frame

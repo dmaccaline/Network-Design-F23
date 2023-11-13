@@ -25,7 +25,7 @@ def rdt_send(clientSocket,serverName,serverPort,data):
         goodAck = False
         while(flag):
             #udt send packet
-            udt_send(clientSocket,(serverName,serverPort),sendpkt,corruptPercent_client_to_server)
+            udt_send(clientSocket,(serverName,serverPort),sendpkt,corruptPercent_client_to_server,loss_Percent_client)
 
             #Set client socket so recvfrom is not blocking
             clientSocket.setblocking(0)
@@ -33,7 +33,7 @@ def rdt_send(clientSocket,serverName,serverPort,data):
 #Start timer
             timerExpired = False
             #arguments (x, f), after x seconds, call function f
-            timer = threading.Timer(.005, timerCall)
+            timer = threading.Timer(.001, timerCall)
 
             #Start timer
             timer.start()
@@ -81,7 +81,7 @@ def rdt_send(clientSocket,serverName,serverPort,data):
 
 
 #send the packets corrupting some of them
-def udt_send(sendingSocket,destination_addr,packet,corruptPercent):
+def udt_send(sendingSocket,destination_addr,packet,corruptPercent,loss_Percent):
 
     randomNumC = random.randint(1, 100) #for corrupting
     randomNumL = random.randint(0, 99) #for losing packets
@@ -132,7 +132,7 @@ def rdt_rcv(recievingSocket):
             sndpkt=make_pkt(expected_sequence_Num,b'')
 
         # reply to the data with either "good" repsonse or the previous response
-        udt_send(recievingSocket, addr, sndpkt,corruptPercent_server_to_client)
+        udt_send(recievingSocket, addr, sndpkt,corruptPercent_server_to_client,loss_Percent_server)
 
     #if we get here it means the data is good
 

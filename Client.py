@@ -9,6 +9,9 @@ from tkinter import filedialog
 from send_receive import *
 import datetime
 import time
+from functions import *
+
+results = []
 
 def Get_Packets_Raw(file, packetsize):
 
@@ -64,7 +67,8 @@ def UDPClient(fileName):
         print("sending ",len(data),"packets")
         print("corruption rate from the client to the server is: ",corruptPercent_client_to_server,"%")
         print("corruption rate from the server to the client is: ",corruptPercent_server_to_client,"%")
-        print("packet loss rate (both directions) is: ", loss_Percent, "%")
+        print("packet loss rate client to server is: ", loss_Percent_client, "%")
+        print("packet loss rate server to client is: ", loss_Percent_server, "%")
         print()
 
         start_time = datetime.datetime.now()
@@ -97,20 +101,20 @@ def UDPClient(fileName):
 if __name__ == "__main__":
 
     #Variables used for automatic tests, Iterations -> Number of tests, runMultipleTests bool used to control if tests are done
-    iterations = 3
-    runMultipleTests = False
+    iterations = 10
+    runMultipleTests = True
 
     root = tk.Tk()
     root.withdraw()
 
     file_path = filedialog.askopenfilename()
 
+
     #check if input argument provided
     if len(file_path) <= 1:
         #output error if no input file provided
         print("Error: No input file specified")
     else:
-
         #if not running multiple, just call UDP client and disregard returns
         if not runMultipleTests:
             #pass input file name to client

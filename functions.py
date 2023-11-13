@@ -1,10 +1,10 @@
 import random
 printflag=False
 #NOTE: Below values are in % (60 -> 60% chance of corruption or probablility of .6 to corrupt)
-corruptPercent_client_to_server = 0
+corruptPercent_client_to_server = 45
 corruptPercent_server_to_client= 0
-loss_Percent=60
-
+loss_Percent_server=0
+loss_Percent_client=0
 
 def make_pkt(seq,data):
     #packet format =  seq,chksum,data
