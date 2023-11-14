@@ -19,11 +19,13 @@ gathered data for performance analysis
 
 Nathan Grady
 
-Time commitment:
+Time commitment:2 hours
 
 Design contribution:
 
 Coding contribution:
+
+coded packet loss
 
 Debugging contribution:
 
