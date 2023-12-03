@@ -31,6 +31,7 @@ def Get_Packets_Raw(file, packetsize):
 
         currentIndex += packetsize
 
+    packet.append(b'stop')
     return packet
 
 #Client Functionality (called from main)
@@ -73,12 +74,9 @@ def UDPClient(fileName):
 
         start_time = datetime.datetime.now()
 
-        for i in range (0,len(data)):
-            rdt_send(clientSocket, serverName, serverPort, data[i])
-            if(printflag):      print("sending packet number ",i)
+        rdt_send(clientSocket, serverName, serverPort, data)
 
         #send stop bit
-        rdt_send(clientSocket, serverName, serverPort, b'stop')
 
         end_time=datetime.datetime.now()
         print()
@@ -101,7 +99,7 @@ def UDPClient(fileName):
 if __name__ == "__main__":
 
     #Variables used for automatic tests, Iterations -> Number of tests, runMultipleTests bool used to control if tests are done
-    iterations = 10
+    iterations = 2
     runMultipleTests = True
 
     root = tk.Tk()

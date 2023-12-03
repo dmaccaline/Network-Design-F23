@@ -12,71 +12,71 @@ def timerCall():
 
 #using this to track what sequnce number the rdt_send function attaches to its packet
 sequenceNum=0
-def rdt_send(clientSocket,serverName,serverPort,data):
+def rdt_send(clientSocket,serverName,serverPort,allData):
         global sequenceNum
         global timerExpired
-        flag=True
 
-        #make the packet
-        if(printflag):  print("Sending packet")
-        sendpkt = make_pkt(sequenceNum,data)
-#
-        #Loop until packet recieved (properly acked)
-        goodAck = False
-        while(flag):
-            #udt send packet
-            udt_send(clientSocket,(serverName,serverPort),sendpkt,corruptPercent_client_to_server,loss_Percent_client)
+        #flag indicates wether we need to do the loop again
 
-            #Set client socket so recvfrom is not blocking
-            clientSocket.setblocking(0)
 
-#Start timer
-            timerExpired = False
-            #arguments (x, f), after x seconds, call function f
-            timer = threading.Timer(.001, timerCall)
 
-            #Start timer
-            timer.start()
+        for data in allData:
+            flag = True
 
-            #Loop until timer expires
-            while(not timerExpired):
+            #make the packet
+            if(printflag):  print("Sending packet")
+            sendpkt = make_pkt(sequenceNum,data)
+    #
+            #Loop until packet recieved (properly acked)
+            while(flag):
+                #udt send packet
+                udt_send(clientSocket,(serverName,serverPort),sendpkt,corruptPercent_client_to_server,loss_Percent_client)
 
-                # Attempt to read from socket.  NOTE: With setvlocking(0) set, will throw error if nothing is ready to recieve
-                try:
-                    rcvpkt, addr = clientSocket.recvfrom(2048)
 
-                    #Packet recieved, extract dadta and check if a good ack
-                    data, recieved_sequence_num, chksum = extract(rcvpkt)
-                    if(printflag):      print("     sent sequnce num: ", sequenceNum)
-                    if(printflag):      print("     recivied seq: ", recieved_sequence_num)
+                #Start timer
+                timerExpired = False
+                #arguments (x, f), after x seconds, call function f
+                timer = threading.Timer(.001, timerCall)
+                timer.start()
+                # Set client socket so recvfrom is not blocking
+                clientSocket.setblocking(0)
 
-                    #if not corrupt and correct sequence number, stop timer, and break from loop (packet successfully sent and acked)
-                    if(not (corrupt(rcvpkt)or (not (recieved_sequence_num==sequenceNum)))):
-                        if(printflag):   print("Good ack")
-                        #Stop timer and change flags when good ack recieved
-                        goodAck = True
-                        flag = False
-                        timer.cancel()
+                #Loop until timer expires
+                while(not timerExpired):
 
-                        #packet send, end function
-                        if(printflag): print()
+                    # Attempt to read from socket.  NOTE: With setvlocking(0) set, will throw error if nothing is ready to recieve
+                    try:
+                        rcvpkt, addr = clientSocket.recvfrom(2048)
 
-                        sequenceNum = (sequenceNum + 1) % 2
-                        return
-                    else:
-                        if(printflag):  print("corrupt")
-                            
-                except:
-                    if(printflag and False):
-                        print("Waiting for response")
-                    #Nothing recieved, do nothing (loop repeats, to try waiting for data again or for timer expiration)
+                        #Packet recieved, extract dadta and check if a good ack
+                        data, recieved_sequence_num, chksum = extract(rcvpkt)
+                        if(printflag):      print("     sent sequnce num: ", sequenceNum)
+                        if(printflag):      print("     recivied seq: ", recieved_sequence_num)
 
-#Test
-        #if we get here that means we like the repsonse we got and we can iterate the
-        #sequence number and then move on
-        if(printflag): print()
+                        #if not corrupt and correct sequence number, stop timer, and break from loop (packet successfully sent and acked)
+                        if(not (corrupt(rcvpkt)or (not (recieved_sequence_num==sequenceNum)))):
+                            if(printflag):   print("Good ack")
+                            #Stop timer and change flags when good ack recieved
+                            flag = False
+                            timer.cancel()
 
-        sequenceNum = (sequenceNum + 1) % 2
+                            #packet send, end function
+                            if(printflag): print()
+                            break;
+                        else:
+                            if(printflag):  print("corrupt")
+
+                    except:
+                        if(printflag and False):
+                            print("Waiting for response")
+                        #Nothing recieved, do nothing (loop repeats, to try waiting for data again or for timer expiration)
+
+
+            #if we get here that means we like the repsonse we got and we can iterate the
+            #sequence number and then move on
+            if(printflag): print()
+
+            sequenceNum = (sequenceNum + 1) % 2
 
 
 
