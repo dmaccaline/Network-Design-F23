@@ -100,7 +100,7 @@ if __name__ == "__main__":
 
     #Variables used for automatic tests, Iterations -> Number of tests, runMultipleTests bool used to control if tests are done
     iterations = 2
-    runMultipleTests = True
+    runMultipleTests = False
 
     root = tk.Tk()
     root.withdraw()

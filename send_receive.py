@@ -2,81 +2,116 @@ from functions import *
 import threading
 import time
 
+#global vairables
 timerExpired = False
+runTimer=True
+nextSeqNum=0
+base=0
+window=10
+sndpkt=[]
+GO = True
 
-def timerCall():
-    if(printflag):  print("Timer expired")
+
+def Timer():
+    print("Timer Expired")
     global timerExpired
-    timerExpired = True
-    
+    timerExpired=True
 
-#using this to track what sequnce number the rdt_send function attaches to its packet
-sequenceNum=0
+
+#the listners job is listen for packets check if they are good and to move the base
+#variable that is being used in the sender function
+def Listner(clientSocket):
+    global nextSeqNum, base, window, runTimer, sndpkt
+
+    while (True):
+        # Attempt to read from socket.  NOTE: With setvlocking(0) set, will throw error if nothing is ready to recieve
+        try:
+            # wait for ACKS
+            rcvpkt, addr = clientSocket.recvfrom(2048)
+            data, recieved_sequence_num, chksum = extract(rcvpkt)
+            print("got ACK: ",recieved_sequence_num)
+            if(not corrupt(rcvpkt)):
+                if(base==recieved_sequence_num):
+                    base+=1
+        except:
+            pass
+
+
+
+#the job of the sender is to transmit base up to the window size and then retransmit if the
+#timer runs out
+def Sender(clientSocket,serverName,serverPort,allData):
+    global nextSeqNum, base, window, runTimer,sndpkt
+
+    while(True):
+        if(not timerExpired):
+
+            if(nextSeqNum<base+window):
+                    sndpkt.append(make_pkt(nextSeqNum,allData[nextSeqNum]))
+                    print("sending packet",nextSeqNum)
+                    udt_send(clientSocket,(serverName,serverPort),sndpkt[nextSeqNum],corruptPercent_client_to_server,loss_Percent_client)
+                    if(base==nextSeqNum):
+                        #Start timer
+                        runTimer=True
+                    nextSeqNum+=1
+
+
+                #if the timer is expired resart timer then retransmit
+        else:
+            # resart timer
+            runTimer = False
+            time.sleep(0.1)
+            runTimer = True
+            time.sleep(0.1)
+
+            # resend all of the packts saved in sndpkt
+            for i in range(base, nextSeqNum):
+                print("resending Packet: ", i)
+                udt_send(clientSocket, (serverName, serverPort), sndpkt[i], corruptPercent_client_to_server,
+                         loss_Percent_client)
+
+
+
+#this thread will call the timer thread after the interval. However if runtimer is turned off
+#before that it will just cancel the timer thread. If There is no timer thread and runTimer is
+#turned on then it will make a timer thread. This way you can turn the timer on and off from anywhere
+#else in the code just by changing the runTimer Variable
+def timerControler(num):
+    count=0
+    global runTimer
+    global timerExpired
+
+    while(True):
+        #if run timer is on and there are not currently any timer threads then make one
+        if(runTimer and count<1):
+            timerExpired=False
+            S = threading.Timer(3, Timer)
+            S.start()
+            count+=1
+        #if run timer is off and a timer thread is on then turn it off
+        if(not runTimer and count>0):
+            #if we turn off the timer stop the timer thread
+            S.cancel()
+            count-=1
+
+
 def rdt_send(clientSocket,serverName,serverPort,allData):
-        global sequenceNum
-        global timerExpired
+    global runTimer
 
-        #flag indicates wether we need to do the loop again
+    #this function needs to be in differnt threads so it can listen and send at the same time
+    lisnerThread = threading.Thread(target=Listner, args=(clientSocket,))
+    SenderThread = threading.Thread(target=Sender, args=(clientSocket,serverName,serverPort,allData))
+    TimerControl=threading.Thread(target=timerControler, args=(10,))
 
-
-
-        for data in allData:
-            flag = True
-
-            #make the packet
-            if(printflag):  print("Sending packet")
-            sendpkt = make_pkt(sequenceNum,data)
-    #
-            #Loop until packet recieved (properly acked)
-            while(flag):
-                #udt send packet
-                udt_send(clientSocket,(serverName,serverPort),sendpkt,corruptPercent_client_to_server,loss_Percent_client)
+    lisnerThread.start()
+    SenderThread.start()
+    TimerControl.start()
 
 
-                #Start timer
-                timerExpired = False
-                #arguments (x, f), after x seconds, call function f
-                timer = threading.Timer(.001, timerCall)
-                timer.start()
-                # Set client socket so recvfrom is not blocking
-                clientSocket.setblocking(0)
-
-                #Loop until timer expires
-                while(not timerExpired):
-
-                    # Attempt to read from socket.  NOTE: With setvlocking(0) set, will throw error if nothing is ready to recieve
-                    try:
-                        rcvpkt, addr = clientSocket.recvfrom(2048)
-
-                        #Packet recieved, extract dadta and check if a good ack
-                        data, recieved_sequence_num, chksum = extract(rcvpkt)
-                        if(printflag):      print("     sent sequnce num: ", sequenceNum)
-                        if(printflag):      print("     recivied seq: ", recieved_sequence_num)
-
-                        #if not corrupt and correct sequence number, stop timer, and break from loop (packet successfully sent and acked)
-                        if(not (corrupt(rcvpkt)or (not (recieved_sequence_num==sequenceNum)))):
-                            if(printflag):   print("Good ack")
-                            #Stop timer and change flags when good ack recieved
-                            flag = False
-                            timer.cancel()
-
-                            #packet send, end function
-                            if(printflag): print()
-                            break;
-                        else:
-                            if(printflag):  print("corrupt")
-
-                    except:
-                        if(printflag and False):
-                            print("Waiting for response")
-                        #Nothing recieved, do nothing (loop repeats, to try waiting for data again or for timer expiration)
-
-
-            #if we get here that means we like the repsonse we got and we can iterate the
-            #sequence number and then move on
-            if(printflag): print()
-
-            sequenceNum = (sequenceNum + 1) % 2
+    #wait for threads to finsih, none of them will yet
+    lisnerThread.join()
+    SenderThread.join()
+    TimerControl.join()
 
 
 
@@ -103,41 +138,28 @@ def udt_rcv(recievingSocket):
 
 
 expected_sequence_Num=0
-sndpkt = make_pkt(1, b'generic response')
+returnPckt=make_pkt(3,b'ACK')
 def rdt_rcv(recievingSocket):
-    global expected_sequence_Num
-    global sndpkt
-    flag=True
+    global  expected_sequence_Num
 
-    while(flag):
-
-        flag = False
-
-        #get the data
+    while(True):
+        #get the packet out of the socket
         rcvPacket, addr=udt_rcv(recievingSocket)
 
-        # extract the data
+        #extract stuff out of the packet
         data,recieved_sequence_num,chksum = extract(rcvPacket)
 
-        if(printflag):      print("     expecting sequnce num: ",expected_sequence_Num)
-        if(printflag):      print("     recivied seq: ",recieved_sequence_num)
+        #if the packet is good update the response packet
+        if(not corrupt(rcvPacket) and recieved_sequence_num==expected_sequence_Num):
+            returnPckt=make_pkt(expected_sequence_Num,b'ACK')
 
-        #for now just read as 'if bad packet' bad=corrupt or wrong sequnce number
-        if(corrupt(rcvPacket) or (not (recieved_sequence_num==expected_sequence_Num))):
-            #keep previous response do the loop again
-            if(printflag):  print("     corrupt")
-            flag=True
-        else:
-            #make good response, exit loop
-            sndpkt=make_pkt(expected_sequence_Num,b'')
+        #send the response packet
+        udt_send(recievingSocket, addr, returnPckt,corruptPercent_server_to_client,loss_Percent_server)
+        #iterate the expect sequence number
+        expected_sequence_Num+=1
 
-        # reply to the data with either "good" repsonse or the previous response
-        udt_send(recievingSocket, addr, sndpkt,corruptPercent_server_to_client,loss_Percent_server)
+        print("the esn is now : ",expected_sequence_Num)
 
-    #if we get here it means the data is good
 
-    #iterate the epected sequence num
-    expected_sequence_Num=(expected_sequence_Num+1)%2
-
-    #deliver the data
-    return data, addr
+    # #deliver the data
+    return b'nada', 0
