@@ -8,10 +8,13 @@ import threading
 #this is the first response the server will send to the client
 
 TimerExpired=False
+fail=0
 
 
 def rdt_send(clientSocket,serverName,serverPort,file):
-    global  TimerExpired,window
+    global  TimerExpired,window,fail
+
+    failcount=0
 
     nextSeqNum = 1
     base = 1
@@ -39,8 +42,8 @@ def rdt_send(clientSocket,serverName,serverPort,file):
         # recieve the data
         clientSocket.setblocking(0)
         try:
-
             rcvPacket, addr = clientSocket.recvfrom(2048)
+            fail = 0
 
             if (not corrupt(rcvPacket)):
 
@@ -55,10 +58,15 @@ def rdt_send(clientSocket,serverName,serverPort,file):
                     stopTimer()
 
                 # if we the recieved sequence number is equal to or above the base then reset the timer
-                else:
+                elif (recieved_sequence_num >= base):
                     starttimer()
         except:
-            pass
+            fail+=1
+            if(fail==1):
+                failcount+=1
+            print(fail)
+
+
 
         # if the timer is expired resart the timer then retransmit base up to nextseqnum-1
         if (TimerExpired):
@@ -69,6 +77,7 @@ def rdt_send(clientSocket,serverName,serverPort,file):
                 udt_send(clientSocket, (serverName, serverPort), sndpkt[i], corruptPercent_client_to_server)
 
     print("done")
+    print("failed ",failcount)
 
 
 
@@ -100,6 +109,7 @@ def rdt_rcv(recievingSocket):
             if(printflag):print("corrupt")
 
         #respond to the data
+        if printflag: print("sent: ",expected_sequence_Num)
         udt_send(recievingSocket, addr, sndpkt, corruptPercent_server_to_client)
 
     return data, addr
@@ -151,10 +161,11 @@ def udt_rcv(recievingSocket):
 
 def Timer():
     if(printflag):print("Timer Expired")
-    global TimerExpired
+    global TimerExpired,fail
+    fail=0
     TimerExpired=True
 
-timerThread= threading.Timer(0.01, Timer)
+timerThread= threading.Timer(timeout, Timer)
 
 
 #if a timer thread is running stop it, start another

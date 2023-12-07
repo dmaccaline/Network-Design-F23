@@ -1,11 +1,11 @@
 import random
 printflag=True
 #NOTE: Below values are in % (60 -> 60% chance of corruption or probablility of .6 to corrupt)
-corruptPercent_client_to_server = 5
-corruptPercent_server_to_client= 20
-lossPercent=10
-window = 15
-timeout=0.005
+corruptPercent_client_to_server = 50
+corruptPercent_server_to_client= 0
+lossPercent=0
+window = 20
+timeout=1e-6
 
 
 def make_pkt(seq,data):
