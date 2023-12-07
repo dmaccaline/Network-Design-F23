@@ -64,7 +64,8 @@ def UDPClient(fileName):
     clientSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
     #send packets one at a time
-    try:
+    if(True):
+    #try:
         print("sending ",len(data),"packets")
         print("corruption rate from the client to the server is: ",corruptPercent_client_to_server,"%")
         print("corruption rate from the server to the client is: ",corruptPercent_server_to_client,"%")
@@ -85,9 +86,9 @@ def UDPClient(fileName):
         time = end_time-start_time
         print("total time: ",(end_time-start_time))
 
-    except:
-        print("ther server is probably down")
-        return 0, 0
+    #except:
+   #     print("ther server is probably down")
+  #      return 0, 0
 
     clientSocket.close()
     #Return time taken in microseconds and seconds
