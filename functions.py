@@ -1,17 +1,18 @@
 import random
-printflag=False
+printflag=True
 #NOTE: Below values are in % (60 -> 60% chance of corruption or probablility of .6 to corrupt)
-corruptPercent_client_to_server = 40
-corruptPercent_server_to_client= 40
+corruptPercent_client_to_server = 5
+corruptPercent_server_to_client= 20
+lossPercent=10
+window = 15
+timeout=0.005
 
 
 def make_pkt(seq,data):
     #packet format =  seq,chksum,data
     #Note: Sequence number 0 is encoded as 00000000 and Sequence number 1 is encoded as 11111111 (255)
-    if(seq == 1):
-        seq = int.to_bytes(255, 1, "big")
-    else:
-        seq = int.to_bytes(seq, 1, "big")
+    seq = int.to_bytes(seq, 2, "big")
+
 
     #seq=int.to_bytes(seq, 1, "big")
     packet=seq+data
@@ -24,14 +25,13 @@ def extract(rcvpkt):
 
     chksum = rcvpkt[0:2] #chksum is 1st and 2nd Byte
 
-    seq = rcvpkt[2:3]  # sequence num should be 3rd Byte
+    seq = rcvpkt[2:4]  # sequence num should be 3rd and 4th Byte
 
     seqinteger = int.from_bytes(seq, "big")
 
-    if(seqinteger == 255):
-        seqinteger = 1
 
-    pckt=rcvpkt[3:] #packet starts at the 4th Byte
+
+    pckt=rcvpkt[4:] #packet starts at the 5th Byte
 
     return pckt, seqinteger, chksum
 
@@ -76,8 +76,8 @@ def corrupt(rcvPacket):
     calculated_chksum=GetCheckSum(packet)#calculate the actual chksum of the packet so you can compare it
     #to the recieved one
 
-    if(printflag):    print("     recieved chksum: ",recieved_chksum)
-    if(printflag):    print("     calculated chksum: ", calculated_chksum)
+    #if(printflag):    print("     recieved chksum: ",recieved_chksum)
+    #if(printflag):    print("     calculated chksum: ", calculated_chksum)
 
     return (not(recieved_chksum==calculated_chksum))
 

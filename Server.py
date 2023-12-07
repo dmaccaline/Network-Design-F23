@@ -8,6 +8,7 @@ from send_receive import *
 import os
 
 
+
 def UDPServer():
 
     #string of bytes to hold passed file
@@ -28,8 +29,8 @@ def UDPServer():
     while True:
 
         rcvPacket, addr =rdt_rcv(serverSocket)
-        if(printflag):  print("recieved packet: ", count)
-        if(printflag):  print()
+        if(printflag):("recieved packet: ", count)
+        if(printflag):print()
         count+=1
 
         #if passed sentence = stop code

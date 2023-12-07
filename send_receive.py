@@ -1,51 +1,137 @@
+import time
+
 from functions import *
+import threading
 
-#using this to track what sequnce number the rdt_send function attaches to its packet
-sequenceNum=0
-def rdt_send(clientSocket,serverName,serverPort,data):
-        global sequenceNum
-        flag=True
 
-        #make the packet
-        sendpkt = make_pkt(sequenceNum,data)
-#
-        #basically we keep sending the same packet until we get the response wanted
-        while(flag):
-            #udt send packet
-            udt_send(clientSocket,(serverName,serverPort),sendpkt,corruptPercent_client_to_server)
-            # wait to recieve a packet
-            rcvpkt, addr = udt_rcv(clientSocket)
 
-            #extract the data from the packet
-            data, recieved_sequence_num, chksum = extract(rcvpkt)
-            if(printflag):      print("     sent sequnce num: ", sequenceNum)
-            if(printflag):      print("     recivied seq: ", recieved_sequence_num)
+#this is the first response the server will send to the client
 
+TimerExpired=False
+
+
+def rdt_send(clientSocket,serverName,serverPort,file):
+    global  TimerExpired,window
+
+    nextSeqNum = 1
+    base = 1
+
+    # make the buffer Note both the buffer and data have a dummy entry as the first thing in the list
+    sndpkt = [b'']
+    while (base<len(file)-1):
+
+        if not (TimerExpired):
+            # if the next sequence number is between the base and the window but not out of the end of the file
+            if (nextSeqNum < base + window and nextSeqNum<len(file)):
+
+                # make the packet and add it to the buffer
+                if (printflag): print("sent: ", nextSeqNum, " base: ", base)
+
+                sndpkt.append(make_pkt(nextSeqNum, file[nextSeqNum]))
+
+                udt_send(clientSocket, (serverName, serverPort), sndpkt[nextSeqNum], corruptPercent_client_to_server)
+
+                if (base == nextSeqNum):
+                    # start timer
+                    starttimer()
+                nextSeqNum += 1
+
+        # recieve the data
+        clientSocket.setblocking(0)
+        try:
+
+            rcvPacket, addr = clientSocket.recvfrom(2048)
+
+            if (not corrupt(rcvPacket)):
+
+                data, recieved_sequence_num, chksum = extract(rcvPacket)
+
+                if (printflag): print("recieved: ", recieved_sequence_num, " base: ", recieved_sequence_num + 1)
+
+                base = recieved_sequence_num + 1
+
+                # if the whole window was recieved then pause the timer
+                if (base == nextSeqNum):
+                    stopTimer()
+
+                # if we the recieved sequence number is equal to or above the base then reset the timer
+                else:
+                    starttimer()
+        except:
+            pass
+
+        # if the timer is expired resart the timer then retransmit base up to nextseqnum-1
+        if (TimerExpired):
+
+            starttimer()
+            for i in range(base, nextSeqNum):
+                if (printflag): print("resending : ", i, " base: ", base)
+                udt_send(clientSocket, (serverName, serverPort), sndpkt[i], corruptPercent_client_to_server)
+
+    print("done")
+
+
+
+
+
+
+sndpkt = make_pkt(0, b'generic response')
+expected_sequence_Num=1
+
+
+def rdt_rcv(recievingSocket):
+    global expected_sequence_Num,sndpkt
+    # get the data
+    flag=True
+
+    while(flag):
+        rcvPacket, addr = udt_rcv(recievingSocket)
+
+        # extract the data
+        data, recieved_sequence_num, chksum = extract(rcvPacket)
+        if(printflag):print("recieved: ", recieved_sequence_num," expecting: ",expected_sequence_Num)
+
+        #if the data is not corrupt and it has the correct sequence number update the response
+        if( not corrupt(rcvPacket)and recieved_sequence_num==expected_sequence_Num):
+            sndpkt = make_pkt(expected_sequence_Num, b'')
+            expected_sequence_Num += 1
             flag=False
-            #if the recieved packet is corrupt  or the wrong sequnce number do the loop again
-            if(corrupt(rcvpkt)or (not (recieved_sequence_num==sequenceNum))):
-                if(printflag):      print("corrupt")
-                flag=True
+        if(corrupt(rcvPacket)):
+            if(printflag):print("corrupt")
 
-#Test
-        #if we get here that means we like the repsonse we got and we can iterate the
-        #sequence number and then move on
-        if(printflag): print()
+        #respond to the data
+        udt_send(recievingSocket, addr, sndpkt, corruptPercent_server_to_client)
 
-        sequenceNum = (sequenceNum + 1) % 2
+    return data, addr
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 #send the packets corrupting some of them
 def udt_send(sendingSocket,destination_addr,packet,corruptPercent):
+    global lossPercent
 
-    randomNum = random.randint(1, 100)
+    randomNumC = random.randint(1, 100) #for corrupting
+    randomNumL = random.randint(0, 99) #for losing packets
 
     # if the random number is less than corrupt percent corrupt the packet
-    if (randomNum <= corruptPercent):
+    if (randomNumC <= corruptPercent):
         packet=coruptPacket(packet)
 
-    sendingSocket.sendto(packet, destination_addr)
+    if(randomNumL<(100-lossPercent)):
+        sendingSocket.sendto(packet, destination_addr)
 
 
 def udt_rcv(recievingSocket):
@@ -56,42 +142,34 @@ def udt_rcv(recievingSocket):
         return data, addr
 
 
-expected_sequence_Num=0
-sndpkt = make_pkt(1, b'generic response')
-def rdt_rcv(recievingSocket):
-    global expected_sequence_Num
-    global sndpkt
-    flag=True
 
-    while(flag):
 
-        flag = False
 
-        #get the data
-        rcvPacket, addr=udt_rcv(recievingSocket)
 
-        # extract the data
-        data,recieved_sequence_num,chksum = extract(rcvPacket)
 
-        if(printflag):      print("     expecting sequnce num: ",expected_sequence_Num)
-        if(printflag):      print("     recivied seq: ",recieved_sequence_num)
 
-        #for now just read as 'if bad packet' bad=corrupt or wrong sequnce number
-        if(corrupt(rcvPacket) or (not (recieved_sequence_num==expected_sequence_Num))):
-            #keep previous response do the loop again
-            if(printflag):  print("     corrupt")
-            flag=True
-        else:
-            #make good response, exit loop
-            sndpkt=make_pkt(expected_sequence_Num,b'')
 
-        # reply to the data with either "good" repsonse or the previous response
-        udt_send(recievingSocket, addr, sndpkt,corruptPercent_server_to_client)
+def Timer():
+    if(printflag):print("Timer Expired")
+    global TimerExpired
+    TimerExpired=True
 
-    #if we get here it means the data is good
+timerThread= threading.Timer(0.01, Timer)
 
-    #iterate the epected sequence num
-    expected_sequence_Num=(expected_sequence_Num+1)%2
 
-    #deliver the data
-    return data, addr
+#if a timer thread is running stop it, start another
+def starttimer():
+    global timerThread,TimerExpired,timeout
+    if(printflag):print("starting timer")
+    TimerExpired=False
+    timerThread.cancel()
+    timerThread = threading.Timer(timeout, Timer)
+    timerThread.start()
+
+
+#if a timer thread is running stop it
+def stopTimer():
+    global  timerThread,timercount,TimerExpired
+    if(printflag):print("stop timer")
+    timerThread.cancel()
+    TimerExpired=False

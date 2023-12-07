@@ -9,6 +9,9 @@ from tkinter import filedialog
 from send_receive import *
 import datetime
 import time
+from functions import *
+
+results = []
 
 def Get_Packets_Raw(file, packetsize):
 
@@ -17,7 +20,7 @@ def Get_Packets_Raw(file, packetsize):
     data = file.read()
 
     #create packet list
-    packet = []
+    packet = [b'']
 
     while(currentIndex < len(data)):
 
@@ -28,6 +31,7 @@ def Get_Packets_Raw(file, packetsize):
 
         currentIndex += packetsize
 
+    packet.append(b'stop')
     return packet
 
 #Client Functionality (called from main)
@@ -58,22 +62,23 @@ def UDPClient(fileName):
     serverPort = 11000
     # create UDP Socket
     clientSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    clientSocket.bind(('', 9999))
 
     #send packets one at a time
     try:
+        print("PIPELINED DATA TRANSFER WINDOW SIZE: ",window)
         print("sending ",len(data),"packets")
         print("corruption rate from the client to the server is: ",corruptPercent_client_to_server,"%")
         print("corruption rate from the server to the client is: ",corruptPercent_server_to_client,"%")
+        print("loss percent both ways is: ",lossPercent,"%")
+        print("timeout is : ",timeout," seconds")
         print()
 
         start_time = datetime.datetime.now()
 
-        for i in range (0,len(data)):
-            rdt_send(clientSocket, serverName, serverPort, data[i])
-            if(printflag):      print("sending packet number ",i)
+        rdt_send(clientSocket, serverName, serverPort, data)
 
         #send stop bit
-        rdt_send(clientSocket, serverName, serverPort, b'stop')
 
         end_time=datetime.datetime.now()
         print()
@@ -84,6 +89,7 @@ def UDPClient(fileName):
 
     except:
         print("ther server is probably down")
+        return 0, 0
 
     clientSocket.close()
     #Return time taken in microseconds and seconds
@@ -95,7 +101,7 @@ def UDPClient(fileName):
 if __name__ == "__main__":
 
     #Variables used for automatic tests, Iterations -> Number of tests, runMultipleTests bool used to control if tests are done
-    iterations = 3
+    iterations = 2
     runMultipleTests = False
 
     root = tk.Tk()
@@ -103,12 +109,12 @@ if __name__ == "__main__":
 
     file_path = filedialog.askopenfilename()
 
+
     #check if input argument provided
     if len(file_path) <= 1:
         #output error if no input file provided
         print("Error: No input file specified")
     else:
-
         #if not running multiple, just call UDP client and disregard returns
         if not runMultipleTests:
             #pass input file name to client
