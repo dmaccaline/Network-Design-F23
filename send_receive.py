@@ -51,7 +51,7 @@ def rdt_send(clientSocket,serverName,serverPort,file):
 
                 data, recieved_sequence_num, chksum = extract(rcvPacket)
 
-                if (printflag): print("recieved: ", recieved_sequence_num, " base: ", recieved_sequence_num + 1)
+                if (printflag): print("recieved: ", recieved_sequence_num, " new base: ", recieved_sequence_num + 1)
 
                 base = recieved_sequence_num + 1
 
@@ -66,7 +66,6 @@ def rdt_send(clientSocket,serverName,serverPort,file):
             fail+=1
             if(fail==1):
                 failcount+=1
-            print(fail)
 
 
 
