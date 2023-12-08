@@ -30,7 +30,6 @@ def rdt_send(clientSocket,serverName,serverPort,file):
                 sndpkt.append(make_pkt(nextSeqNum, file[nextSeqNum]))
 
                 udt_send(clientSocket, (serverName, serverPort), sndpkt[nextSeqNum], corruptPercent_client_to_server)
-                sends+=1
 
                 if (base == nextSeqNum):
                     # start timer
@@ -70,7 +69,6 @@ def rdt_send(clientSocket,serverName,serverPort,file):
             for i in range(base, nextSeqNum):
                 if (printflag): print("resending : ", i, " base: ", base)
                 udt_send(clientSocket, (serverName, serverPort), sndpkt[i], corruptPercent_client_to_server)
-                sends+=1
 
 
 
