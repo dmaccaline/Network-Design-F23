@@ -16,10 +16,13 @@ Nathan Grady
 Time commitment:10 hours
 
 Design contribution:
+made needed design changes to rdt send and rdt recieve
 
 Coding contribution:
+coded the needed changes to rdt send and rdt recieve
 
 Debugging contribution:
+did needed debugging for code changes
 
 Report preparation:
 N/A
