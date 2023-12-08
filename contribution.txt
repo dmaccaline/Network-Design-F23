@@ -3,35 +3,23 @@ Daniel Maccaline
 Time commitment:
 
 Design contribution:
-Reworked acknoledgement system
-Added ability for client to send files multiple times for easier averaging accross multiple runs
 
 Coding contribution:
-Removed data section of acknoledgment (unneeded data)
-Changed how sequence numbers were sent in acknoledgment
-Coded section to run client multiple times and average results
 
 Debugging contribution:
-Found and fixed bug causing code to get stuck on initial packet
 
 Report preparation:
-Wrote DesignDoc
-Wrote README.txt
-Ran tests to determine the average time at different loss levels
-Wrote TimeAnalysis.docx to show results from tests
+
 
 Nathan Grady
 
 Time commitment:10 hours
 
 Design contribution:
-made rdt_ send/ receive as well as the functions needed to make these functions
 
 Coding contribution:
-made rdt_send/receive functions as well as the functions needed to make these functions
 
 Debugging contribution:
-dubugged all functions until they worked
 
 Report preparation:
 N/A
