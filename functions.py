@@ -4,7 +4,7 @@ printflag=True
 corruptPercent_client_to_server = 50
 corruptPercent_server_to_client= 0
 lossPercent=0
-window = 20
+window = 3
 timeout=1e-6
 
 
