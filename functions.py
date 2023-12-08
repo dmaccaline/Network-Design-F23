@@ -1,7 +1,7 @@
 import random
-printflag=True
+printflag=False
 #NOTE: Below values are in % (60 -> 60% chance of corruption or probablility of .6 to corrupt)
-corruptPercent_client_to_server = 50
+corruptPercent_client_to_server = 20
 corruptPercent_server_to_client= 0
 lossPercent=0
 window = 3
@@ -28,8 +28,6 @@ def extract(rcvpkt):
     seq = rcvpkt[2:4]  # sequence num should be 3rd and 4th Byte
 
     seqinteger = int.from_bytes(seq, "big")
-
-
 
     pckt=rcvpkt[4:] #packet starts at the 5th Byte
 

@@ -13,10 +13,6 @@ fail=0
 
 def rdt_send(clientSocket,serverName,serverPort,file):
     global  TimerExpired,window,fail
-
-    failcount=0
-    sends=0
-
     nextSeqNum = 1
     base = 1
 
@@ -63,9 +59,7 @@ def rdt_send(clientSocket,serverName,serverPort,file):
                 elif (recieved_sequence_num >= base):
                     starttimer()
         except:
-            fail+=1
-            if(fail==1):
-                failcount+=1
+          pass
 
 
 
@@ -77,9 +71,6 @@ def rdt_send(clientSocket,serverName,serverPort,file):
                 if (printflag): print("resending : ", i, " base: ", base)
                 udt_send(clientSocket, (serverName, serverPort), sndpkt[i], corruptPercent_client_to_server)
                 sends+=1
-    print("done")
-    print("failed ",failcount)
-    print("sens: ",sends)
 
 
 
@@ -88,8 +79,6 @@ def rdt_send(clientSocket,serverName,serverPort,file):
 
 sndpkt = make_pkt(0, b'generic response')
 expected_sequence_Num=1
-
-
 def rdt_rcv(recievingSocket):
     global expected_sequence_Num,sndpkt
     # get the data
