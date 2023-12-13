@@ -1,9 +1,13 @@
 import random
 printflag=False
 #NOTE: Below values are in % (60 -> 60% chance of corruption or probablility of .6 to corrupt)
-corruptPercent_client_to_server = 20
+
+lossPercent_server_to_client=0
+lossPercent_client_to_server=0
+corruptPercent_client_to_server = 0
 corruptPercent_server_to_client= 0
-lossPercent=0
+
+
 window = 3
 timeout=1e-6
 

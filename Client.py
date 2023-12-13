@@ -70,7 +70,8 @@ def UDPClient(fileName):
         print("sending ",len(data),"packets")
         print("corruption rate from the client to the server is: ",corruptPercent_client_to_server,"%")
         print("corruption rate from the server to the client is: ",corruptPercent_server_to_client,"%")
-        print("loss percent both ways is: ",lossPercent,"%")
+        print("loss percent client to server is: ",lossPercent_client_to_server,"%")
+        print("loss percent server to client is: ",lossPercent_server_to_client,"%")
         print("timeout is : ",timeout," seconds")
         print()
 

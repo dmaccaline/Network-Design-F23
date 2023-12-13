@@ -12,7 +12,7 @@ fail=0
 
 
 def rdt_send(clientSocket,serverName,serverPort,file):
-    global  TimerExpired,window,fail
+    global  TimerExpired,window,fail,lossPercent_server_to_client,lossPercent_client_to_server
     nextSeqNum = 1
     base = 1
 
@@ -29,7 +29,7 @@ def rdt_send(clientSocket,serverName,serverPort,file):
 
                 sndpkt.append(make_pkt(nextSeqNum, file[nextSeqNum]))
 
-                udt_send(clientSocket, (serverName, serverPort), sndpkt[nextSeqNum], corruptPercent_client_to_server)
+                udt_send(clientSocket, (serverName, serverPort), sndpkt[nextSeqNum], corruptPercent_client_to_server, lossPercent_client_to_server)
 
                 if (base == nextSeqNum):
                     # start timer
@@ -68,7 +68,7 @@ def rdt_send(clientSocket,serverName,serverPort,file):
             starttimer()
             for i in range(base, nextSeqNum):
                 if (printflag): print("resending : ", i, " base: ", base)
-                udt_send(clientSocket, (serverName, serverPort), sndpkt[i], corruptPercent_client_to_server)
+                udt_send(clientSocket, (serverName, serverPort), sndpkt[i], corruptPercent_client_to_server,lossPercent_client_to_server)
 
 
 
@@ -78,7 +78,7 @@ def rdt_send(clientSocket,serverName,serverPort,file):
 sndpkt = make_pkt(0, b'generic response')
 expected_sequence_Num=1
 def rdt_rcv(recievingSocket):
-    global expected_sequence_Num,sndpkt
+    global expected_sequence_Num,sndpkt,lossPercent_server_to_client,lossPercent_client_to_server
     # get the data
     flag=True
 
@@ -99,7 +99,7 @@ def rdt_rcv(recievingSocket):
 
         #respond to the data
         if printflag: print("sent: ",expected_sequence_Num)
-        udt_send(recievingSocket, addr, sndpkt, corruptPercent_server_to_client)
+        udt_send(recievingSocket, addr, sndpkt, corruptPercent_server_to_client,lossPercent_server_to_client)
 
     return data, addr
 
@@ -119,8 +119,7 @@ def rdt_rcv(recievingSocket):
 
 
 #send the packets corrupting some of them
-def udt_send(sendingSocket,destination_addr,packet,corruptPercent):
-    global lossPercent
+def udt_send(sendingSocket,destination_addr,packet,corruptPercent,loss_Percent):
 
     randomNumC = random.randint(1, 100) #for corrupting
     randomNumL = random.randint(0, 99) #for losing packets
@@ -129,7 +128,7 @@ def udt_send(sendingSocket,destination_addr,packet,corruptPercent):
     if (randomNumC <= corruptPercent):
         packet=coruptPacket(packet)
 
-    if(randomNumL<(100-lossPercent)):
+    if(randomNumL<(100-loss_Percent)):
         sendingSocket.sendto(packet, destination_addr)
 
 
