@@ -1,15 +1,20 @@
 Daniel Maccaline
 
-Time commitment:
+Time commitment: 10hrs
 
 Design contribution:
+determined how/what order to send packets/check for acks in
 
 Coding contribution:
+Made modifications to rdt_send and rdt_recieve to make GBN functional
 
 Debugging contribution:
+General Testing and debugging for minor issues
 
 Report preparation:
-
+Recorded and formatted data for performance plots, made analysis
+Updated output example in Design Doc
+Updated README
 
 Nathan Grady
 
